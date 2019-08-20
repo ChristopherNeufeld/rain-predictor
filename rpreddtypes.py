@@ -29,6 +29,7 @@ class RpBinCommon:
     HEIGHT_KEY = 'HEIGHT'
     XOFFSET_KEY = 'XOFFSET'
     YOFFSET_KEY = 'YOFFSET'
+    TOTALRAIN_KEY = 'TOTALRAIN'
     
 
 class RpBinReader(RpBinCommon):
@@ -43,8 +44,13 @@ class RpBinReader(RpBinCommon):
         self.height = 0
         self.xoffset = 0
         self.yoffset = 0
+        self.totalrain = -1
 
     def read(self, filename):
+        readHeader(filename, True)
+        
+
+    def readHeader(self, filename, withData = False):
         with open(filename, 'rb') as istream:
             try:
                 istream = open(filename, 'rb')
@@ -61,11 +67,13 @@ class RpBinReader(RpBinCommon):
             if vstr != self.VERSION_KEY:
                 raise RpBinFileReadError('File {0} is not a valid '
                                          'file'.format(filename))
-            if vnum != '1':
+            if vnum != '1' and vnum != '2':
                 raise RpBinFileReadError('File {0} is version {1}'
                                          'which is not supported'
                                          'by this code'.format(filename,
                                                                vnum))
+
+            self.version = int(vnum)
 
             width, self.width = (istream.readline().rstrip()
                                  .decode('ascii').split(" "))
@@ -95,6 +103,15 @@ class RpBinReader(RpBinCommon):
                 raise RpBinFileReadError('File {0} is not a valid '
                                          'file'.format(filename))
 
+            if vnum == '2':
+                train, self.totalrain = (istream.readline().rstrip()
+                                         .decode('ascii').split(" "))
+                self.totalrain = int(self.totalrain)
+                if train != self.TOTALRAIN_KEY:
+                    raise RpBinFileReadError('File {0} is not a valid '
+                                             'file'.format(filename))
+
+        if withData:
             btmp = istream.read()
             self.buffer = gzip.decompress(btmp)
             self.blen = self.width * self.height
@@ -102,7 +119,7 @@ class RpBinReader(RpBinCommon):
                 raise RpBinFileReadError('File {0} is '
                                          'corrupted'.format(filename))
             
-            
+
     def getVersion(self):
         return self.version
 
@@ -118,10 +135,24 @@ class RpBinReader(RpBinCommon):
     def getYOffset(self):
         return self.yoffset
 
+    def getTotalRain(self):
+        if self.version < 2:
+            raise RpBinFileReadError('Total rain index is not supported '
+                                     'by this file version.')
+        return self.totalrain
+            
+
     def get1Dbuffer(self):
+        if not self.buffer:
+            raise RpBinFileReadError('Data buffer not available, maybe you '
+                                     'only read the header.')
         return self.buffer
 
     def getNumpyArray(self):
+        if not self.buffer:
+            raise RpBinFileReadError('Data buffer not available, maybe you '
+                                     'only read the header.')
+
         array = np.arange(self.width * self.height, dtype=int)
         for i in range(self.width * self.height):
             array[i] = self.buffer[i]
@@ -134,11 +165,12 @@ class RpBinWriter(RpBinCommon):
     def __init__(self):
         pass
 
-    def write(self, filename, width, height, xoffset, yoffset, values):
+    def write(self, filename, width, height, xoffset, yoffset,
+              totalRain, values):
         with open(filename, 'wb') as ofile:
             ofile.write('{0}\n'.format(self.HEADER_KEY)
                         .encode('ascii'))
-            ofile.write('{0} {1}\n'.format(self.VERSION_KEY, 1)
+            ofile.write('{0} {1}\n'.format(self.VERSION_KEY, 2)
                         .encode('ascii'))
             ofile.write('{0} {1}\n'.format(self.WIDTH_KEY, width)
                         .encode('ascii'))
@@ -147,6 +179,8 @@ class RpBinWriter(RpBinCommon):
             ofile.write('{0} {1}\n'.format(self.XOFFSET_KEY, xoffset)
                         .encode('ascii'))
             ofile.write('{0} {1}\n'.format(self.YOFFSET_KEY, yoffset)
+                        .encode('ascii'))
+            ofile.write('{0} {1}\n'.format(self.TOTALRAIN_KEY, totalRain)
                         .encode('ascii'))
             ofile.write(gzip.compress(bytearray(values)))
 

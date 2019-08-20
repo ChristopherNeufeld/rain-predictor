@@ -85,6 +85,8 @@ for ifile in args.ifilenames:
     cfile = open(ifile, 'rb')
     convertReader.feed(cfile.read())
     cfile.close()
+
+    totalRain = 0
     
     if ( not convertReader.is_complete()
          or not convertReader.has_screen_descriptor() ):
@@ -148,12 +150,13 @@ for ifile in args.ifilenames:
                     appendval = i+1
                     break
             output_block.append(appendval)
+            totalRain += appendval
 
     newfilename = ifile + '.bin'
 
     writer = rpreddtypes.RpBinWriter()
     writer.write(newfilename, newwidth, newheight, xoffset, yoffset,
-                 output_block)
+                 totalRain, output_block)
 
     if (args.verbose):
         print('Wrote output file: {0}'.format(newfilename))
