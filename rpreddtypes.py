@@ -47,7 +47,7 @@ class RpBinReader(RpBinCommon):
         self.totalrain = -1
 
     def read(self, filename):
-        readHeader(filename, True)
+        self.readHeader(filename, True)
         
 
     def readHeader(self, filename, withData = False):
