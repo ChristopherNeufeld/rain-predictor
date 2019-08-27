@@ -166,7 +166,10 @@ class RPDataGenerator(keras.utils.Sequence):
 
 
     def getModuleSizes(self):
-        return list(map(lambda x: 2 * len(x), self.modules))
+        if self.scaling == 1:
+            return list(map(len, self.modules))
+        else:
+            return list(map(lambda x: 2 * len(x), self.modules))
 
     def normalize(self, val):
         if (val < self.heavy):
@@ -184,11 +187,20 @@ class RPDataGenerator(keras.utils.Sequence):
         rval = []
         for module in range(34):
             nPixels = len(self.modules[module])
-            rval.append(numpy.empty(2 * nPixels))
-            for pixelIndex in range(nPixels):
-                pixel = self.modules[module][pixelIndex]
-                rval[module][2 * pixelIndex] = self.normalize(sourcemaxpixels[pixel[0]][pixel[1]])
-                rval[module][2 * pixelIndex + 1] = self.normalize(sourceavgpixels[pixel[0]][pixel[1]])
+
+            if self.scaling == 1:
+                
+                rval.append(numpy.empty(nPixels))
+                for pixelIndex in range(nPixels):
+                    pixel = self.modules[module][pixelIndex]
+                    rval[module][pixelIndex] = self.normalize(sourcemaxpixels[pixel[0]][pixel[1]])
+            else:
+                rval.append(numpy.empty(2 * nPixels))
+                for pixelIndex in range(nPixels):
+                    pixel = self.modules[module][pixelIndex]
+                    rval[module][2 * pixelIndex] = self.normalize(sourcemaxpixels[pixel[0]][pixel[1]])
+                    rval[module][2 * pixelIndex + 1] = self.normalize(sourceavgpixels[pixel[0]][pixel[1]])
+
                 
         return rval
 
@@ -203,8 +215,10 @@ class RPDataGenerator(keras.utils.Sequence):
         rvalX = []
         rvalY = numpy.empty([self.batch_size, 10])
         for i in range(34):
-            rvalX.append(numpy.empty([self.batch_size, 6,
-                                      2 * len(self.modules[i])]))
+            modsize = len(self.modules[i])
+            if self.scaling != 1:
+                modsize *= 2
+            rvalX.append(numpy.empty([self.batch_size, 6, modsize ]))
 
         for oib in range(self.batch_size):
             base_seqno = self.seqlist[index * self.batch_size + oib]
