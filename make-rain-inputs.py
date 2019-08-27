@@ -43,6 +43,9 @@ parser.add_argument('--override-intensities', type=list,
                              0x9933cc, 0x660099],
                     help='Override the colour codes for '
                     'intensities')
+parser.add_argument('--override-scaling', type=list,
+                    dest='rescales', default=[2, 3, 4],
+                    help='Override the coarse-scaling settings.')
 parser.add_argument('--verbose', type=bool, dest='verbose',
                     default = False,
                     help='Extra output during processing')
@@ -156,7 +159,8 @@ for ifile in args.ifilenames:
 
     writer = rpreddtypes.RpBinWriter()
     writer.write(newfilename, newwidth, newheight, xoffset, yoffset,
-                 totalRain, output_block)
+                 len(args.intensities),
+                 totalRain, output_block, [2, 3, 4])
 
     if (args.verbose):
         print('Wrote output file: {0}'.format(newfilename))
