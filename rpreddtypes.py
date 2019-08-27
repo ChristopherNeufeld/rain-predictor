@@ -240,18 +240,6 @@ class RpBinReader(RpBinCommon):
     def getVersion(self):
         return self.version
 
-    def getWidth(self):
-        return self.width
-
-    def getHeight(self):
-        return self.height
-
-    def getXOffset(self):
-        return self.xoffset
-
-    def getYOffset(self):
-        return self.yoffset
-
     def getTotalRain(self):
         if self.version < 2:
             raise RpBinFileReadError('Total rain index is not supported '
