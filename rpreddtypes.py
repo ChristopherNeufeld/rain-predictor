@@ -92,6 +92,9 @@ class RpBinObj:
                 
                 rval.buffer[indexC] = maxV
                 avgV = sumV / count
+                if maxV == 0:
+                    maxV = 1
+                    argV = 1
                 rval.avgbuff[indexC] = int(avgV / maxV * 255)
         return rval
 
