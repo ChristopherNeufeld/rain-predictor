@@ -56,6 +56,10 @@ parser.add_argument('--test-set', type=str, dest='testset',
                     required=True,
                     help='The test set used to detect overfitting '
                     'during training.')
+parser.add_argument('--coarse-factor', type=int, dest='coarseness',
+                    default=1,
+                    help='Coarse scale the data, reducing its size '
+                    'by this factor in each of X and Y.')
 parser.add_argument('--savefile', type=str, dest='savefile',
                     help='The filename at which to save the '
                     'trained network parameters.  A suffix will be '
@@ -85,7 +89,8 @@ trainGenerator = rpgenerator.RPDataGenerator(args.trainingset,
                                              args.centre,
                                              args.sensitive,
                                              args.heavy,
-                                             args.batchsize)
+                                             args.batchsize,
+                                             args.coarseness)
 
 validationGenerator = rpgenerator.RPDataGenerator(args.testset,
                                                   args.pathfile,
@@ -93,7 +98,8 @@ validationGenerator = rpgenerator.RPDataGenerator(args.testset,
                                                   args.centre,
                                                   args.sensitive,
                                                   args.heavy,
-                                                  args.batchsize)
+                                                  args.batchsize,
+                                                  args.coarseness)
 
 hashval = rpreddtypes.genhash(args.centre, args.sensitive, args.heavy)
 modsizes = trainGenerator.getModuleSizes()

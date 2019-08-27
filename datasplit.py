@@ -43,7 +43,7 @@ if args.vetoset:
     with open(args.vetoset, 'r') as ifile:
         for record in ifile:
             fields = record.split()
-            vetolist.append(int(fields[0]))
+            vetoes.append(int(fields[0]))
 
 validcandidates = []
 trainingset = []

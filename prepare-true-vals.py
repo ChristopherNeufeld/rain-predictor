@@ -145,17 +145,18 @@ def rainPresent(binReader, centre, sensitivePixels, heavyVal):
     rain at all in any of the sensitive pixels.  The second indicates
     rain above the threshold intensity for heavy rain.
     """
-    
+
+    rpbo = binReader.getScaledObject(1)
     maxSeen = 0
     anyRain = 0
     heavyRain = 0
     checkPhantom = True
-    xoffset = binReader.xoffset
-    yoffset = binReader.yoffset
+    xoffset = rpbo.getXOffset()
+    yoffset = rpbo.getYOffset()
     offset = [xoffset, yoffset]
-    dataWidth = binReader.width
-    dataHeight = binReader.height
-    data = binReader.getNumpyArray()
+    dataWidth = rpbo.getWidth()
+    dataHeight = rpbo.getHeight()
+    data = rpbo.getNumpyArrayMax()
     for pixel in sensitivePixels:
         pval = data[pixel[0] - xoffset][pixel[1] - yoffset]
         if pval > 0:

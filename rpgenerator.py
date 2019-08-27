@@ -12,13 +12,13 @@ class RPDataGenerator(keras.utils.Sequence):
     'Produces data from the training set records we\'ve built'
     def __init__(self, sequence_file, path_file, veto_file,
                  centre, sensitive_region, heavyThreshold,
-                 batch_size, shuffle=False):
-        self.radius1 = 20
-        self.radius2 = 60
-        self.radius3 = 100
-        self.radius4 = 170
-        self.radius5 = 240
-        self.tripradius = 25
+                 batch_size, scaling, shuffle=False):
+        self.radius1 = int(20 / scaling)
+        self.radius2 = int(60 / scaling)
+        self.radius3 = int(100 / scaling)
+        self.radius4 = int(170 / scaling)
+        self.radius5 = int(240 / scaling)
+        self.tripradius = int(25 / scaling)
         self.sequence_file = sequence_file
         self.path_file = path_file
         self.veto_file = veto_file
@@ -26,6 +26,7 @@ class RPDataGenerator(keras.utils.Sequence):
         self.sensitive_region = sensitive_region
         self.heavy = heavyThreshold
         self.batch_size = batch_size
+        self.scaling = scaling
         self.shuffle = shuffle
         self.hash = rpreddtypes.genhash(centre, sensitive_region,
                                         heavyThreshold)
@@ -93,12 +94,14 @@ class RPDataGenerator(keras.utils.Sequence):
         # covers modules 0-31.  Module 32 is the bullseye, and Module
         # 33 is the tripwire.
 
-        self.modules[32].append(self.centre)
+        c2 = [ int(self.centre[0] / self.scaling),
+               int(self.centre[1] / self.scaling) ]
+        self.modules[32].append(c2)
 
-        for i in range(self.centre[0], 2 * self.centre[0]):
-            for j in range(self.centre[1], 0, -1):
-                deltaI = i - self.centre[0]
-                deltaJ = self.centre[1] - j
+        for i in range(c2[0], 2 * c2[0]):
+            for j in range(c2[1], 0, -1):
+                deltaI = i - c2[0]
+                deltaJ = c2[1] - j
                 distance = math.sqrt(deltaI ** 2 + deltaJ ** 2)
                 if distance <= self.radius1:
                     self.modules[32].append([i, j])
@@ -141,18 +144,21 @@ class RPDataGenerator(keras.utils.Sequence):
 
         
         # Finally, the tripwire
+        sr2 = self.sensitive_region[0]
+        sr2 = [ int(sr2[0] / self.scaling),
+                int(sr2[1] / self.scaling) ]
         for radius in range(-self.tripradius, self.tripradius + 1):
-            i1 = self.centre[0] + radius
-            j1 = self.centre[1] + int(math.sqrt(self.tripradius ** 2 - radius ** 2))
-            j2 = 2 * self.centre[1] - j1
+            i1 = sr2[0] + radius
+            j1 = sr2[1] + int(math.sqrt(self.tripradius ** 2 - radius ** 2))
+            j2 = 2 * sr2[1] - j1
             if not [i1, j1] in self.modules[33]:
                 self.modules[33].append([i1, j1])
             if not [i1, j2] in self.modules[33]:
                 self.modules[33].append([i1, j2])
 
-            j1 = self.centre[1] + radius
-            i1 = self.centre[0] + int(math.sqrt(self.tripradius ** 2 - radius ** 2))
-            i2 = 2 * self.centre[0] - i1
+            j1 = sr2[1] + radius
+            i1 = sr2[0] + int(math.sqrt(self.tripradius ** 2 - radius ** 2))
+            i2 = 2 * sr2[0] - i1
             if not [i1, j1] in self.modules[33]:
                 self.modules[33].append([i1, j1])
             if not [i2, j1] in self.modules[33]:
@@ -160,7 +166,7 @@ class RPDataGenerator(keras.utils.Sequence):
 
 
     def getModuleSizes(self):
-        return list(map(len, self.modules))
+        return list(map(lambda x: 2 * len(x), self.modules))
 
     def normalize(self, val):
         if (val < self.heavy):
@@ -172,14 +178,17 @@ class RPDataGenerator(keras.utils.Sequence):
     def inputsFromOneFile(self, filename):
         reader = rpreddtypes.RpBinReader()
         reader.read(filename)
-        sourcepixels = reader.getNumpyArray()
+        rpbo = reader.getScaledObject(self.scaling)
+        sourcemaxpixels = rpbo.getNumpyArrayMax()
+        sourceavgpixels = rpbo.getNumpyArrayAvg()
         rval = []
         for module in range(34):
             nPixels = len(self.modules[module])
-            rval.append(numpy.empty(nPixels))
+            rval.append(numpy.empty(2 * nPixels))
             for pixelIndex in range(nPixels):
                 pixel = self.modules[module][pixelIndex]
-                rval[module][pixelIndex] = self.normalize(sourcepixels[pixel[0]][pixel[1]])
+                rval[module][2 * pixelIndex] = self.normalize(sourcemaxpixels[pixel[0]][pixel[1]])
+                rval[module][2 * pixelIndex + 1] = self.normalize(sourceavgpixels[pixel[0]][pixel[1]])
                 
         return rval
 
@@ -195,7 +204,7 @@ class RPDataGenerator(keras.utils.Sequence):
         rvalY = numpy.empty([self.batch_size, 10])
         for i in range(34):
             rvalX.append(numpy.empty([self.batch_size, 6,
-                                      len(self.modules[i])]))
+                                      2 * len(self.modules[i])]))
 
         for oib in range(self.batch_size):
             base_seqno = self.seqlist[index * self.batch_size + oib]
