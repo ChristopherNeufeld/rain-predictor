@@ -28,7 +28,8 @@ import numpy as np
 defBatchSize = 512
 ring_module_nodes_0 = 1000
 ring_module_nodes_1 = 5
-bullseye_module_nodes_0 = 1000
+lstm_module_nodes = 300
+bullseye_module_nodes_0 = 300
 bullseye_module_nodes_1 = 5
 tripwire_module_nodes_0 = 40
 tripwire_module_nodes_1 = 5
@@ -162,7 +163,8 @@ else:
 
     aggregated = Concatenate()(scanned)
 
-    time_layer = LSTM(6, stateful = False, activation='relu')(aggregated)
+    time_layer = LSTM(lstm_module_nodes, stateful = False,
+                      activation='relu')(aggregated)
 
     synth_layer = Dense(synth_layer_nodes, activation='relu')(time_layer)
     output_layer = Dense(num_outputs, activation='sigmoid')(synth_layer)
