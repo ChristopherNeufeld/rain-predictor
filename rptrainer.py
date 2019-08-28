@@ -18,7 +18,7 @@ import sys
 import numpy as np
 
 
-    
+
 
 ### Main code entry point here
 
@@ -171,12 +171,13 @@ mymodel.compile(loss='binary_crossentropy', optimizer='sgd')
 #                metrics=[tf.keras.metrics.FalsePositives(),
 #                         tf.keras.metrics.FalseNegatives()])
 
-ie = 0
-while True:
-    mymodel.fit_generator(initial_epoch = ie, generator=trainGenerator,
-                          validation_data = validationGenerator,
-                          shuffle=False)
-    ie += 1
-    if args.savefile:
-        mymodel.save(args.savefile)
 
+if args.savefile:
+    keras.callbacks.ModelCheckpoint(args.savefile, save_weights_only=False,
+                                    save_best_only = False,
+                                    verbose=1,
+                                    mode='auto', period=1)
+
+mymodel.fit_generator(generator=trainGenerator,
+                      validation_data = validationGenerator,
+                      shuffle=False)
