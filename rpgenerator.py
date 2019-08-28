@@ -6,6 +6,7 @@ import keras
 import rpreddtypes
 import math
 import numpy
+import random
 
 
 class RPDataGenerator(keras.utils.Sequence):
@@ -69,13 +70,13 @@ class RPDataGenerator(keras.utils.Sequence):
             shuffleSequence()
 
     def shuffleSequence(self):
-        random.shuffle(seqlist)
+        random.shuffle(self.seqlist)
 
     def on_epoch_end(self):
         self.shuffleSequence()
 
     def __len__(self):
-        return 1 + ( len(self.seqlist) // self.batch_size )
+        return len(self.seqlist) // self.batch_size
 
     def buildModules(self):
         # For each module, we store a list of pixels.  We put the
