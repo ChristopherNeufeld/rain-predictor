@@ -14,20 +14,25 @@
 # consecutive sequence numbers.  In that case, we generate a record
 # like this:
 #
-# <FIRST_SEQ_NO> <HASH> <N_ROTS> <ROTNUM> <RAIN0_1> <HEAVY0_1> ...
+# <FIRST_SEQ_NO> <HASH> <IS_RAINING> <N_ROTS> <ROTNUM> <RAIN0_1> <HEAVY0_1> ...
 #
 # The first field is the starting sequence number in the run of 36.
 #
 # The second is the hash, as in prepare-true-vals.py, to ensure that
 # we don't accidentally mix incompatible training data
 #
-# The third field is the number of rotations from which this is taken,
+# The third field is a boolean value that indicates whether the last
+# timestep in the historical record is showing rain.  That way we can
+# see how well the network predicts transitions, instead of having it
+# just tell us that the rain/not rain continues.
+
+# The fourth field is the number of rotations from which this is taken,
 # or 0 if we're using unrotated data sets
 #
-# The fourth field is the rotation index.  0 for unrotated, up to 1
+# The fifth field is the rotation index.  0 for unrotated, up to 1
 # less than N_ROTS
 #
-# The fifth field is the logical OR of the RAIN record for the 7th
+# The sixth field is the logical OR of the RAIN record for the 7th
 # through 12th sequence numbers.  The sixth is the logical OR of the
 # HEAVY_RAIN record for the 7th through 12th sequence numbers.
 #
@@ -110,7 +115,10 @@ while idx < len(seqnoList) - 36:
         continue
 
     for rot in range(nRots + 1):
-        record = '{0} {1} {2} {3} '.format(candSeqNo, hashval, nRots, rot)
+        lastHistoricalRecord = parsedData[candSeqNo + 5]
+        rainingNow = lastHistoricalRecord[1 + rot * 2]
+        record = '{0} {1} {2} {3} {4} '.format(candSeqNo, hashval,
+                                               rainingNow, nRots, rot)
         binnedValues = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
         for timeInterval in range(5):
             for snapshot in range(6):
