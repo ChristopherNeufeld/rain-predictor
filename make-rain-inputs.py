@@ -9,6 +9,16 @@ import argparse
 import sys
 import gif
 import rpreddtypes
+from rpreddtypes import normalize
+import numpy
+import math
+
+
+
+
+### Main entry point starts here
+
+
 
 parser = argparse.ArgumentParser(description='Extract '
                                  'precipitation data.')
@@ -46,6 +56,23 @@ parser.add_argument('--override-intensities', type=list,
 parser.add_argument('--override-scaling', type=list,
                     dest='rescales', default=[2, 3, 4],
                     help='Override the coarse-scaling settings.')
+parser.add_argument('--build-preprocessed', type=bool, dest='preproc',
+                    default = True,
+                    help = 'Build preprocessed full-resolution '
+                    'modules (recommended)')
+parser.add_argument('--preprocessed-num-rings', type=int, dest='numRings',
+                    default = 20,
+                    help = 'Number of rings of modules to produce '
+                    'when preprocessing.')
+parser.add_argument('--preprocessed-num-cuts', type=int,
+                    dest='numRadialCuts',
+                    default = 20,
+                    help = 'Number of radial cuts to produce '
+                    'when preprocessing.')
+parser.add_argument('--heavy', type=int, dest='heavy',
+                    default = 3,
+                    help = 'Intensity of heavy rain, for use when '
+                    'producing pre--processed inputs.')
 parser.add_argument('--verbose', type=bool, dest='verbose',
                     default = False,
                     help='Extra output during processing')
@@ -82,7 +109,52 @@ if args.oheight != -1:
 
 xoffset = args.offsetx
 yoffset = args.offsety
-    
+modules = None
+numModules = 0
+
+if args.preproc:
+    # For each module, we store a list of pixels.  We walk the
+    # pixel space and assign each one to a single module.  This
+    # does not, in general, guarantee that the modules have
+    # exactly the same number of pixels, but that's not an
+    # important consideration here.
+
+    numModules = args.numRings * args.numRadialCuts
+    modules = numpy.full((newheight, newwidth), -1)
+
+    # Modules are numbered clockwise (because this is a
+    # left-handded coordinate system) from the X axis, closest
+    # ring first.
+
+    radius = int(newwidth / 2)
+    r2 = radius ** 2
+    for pixelI in range(2 * radius):
+        for pixelJ in range(2 * radius):
+            delta = [ pixelI - radius, pixelJ - radius ]
+            d2 = delta[0] ** 2 + delta[1] ** 2
+            if d2 > r2:
+                continue
+
+            ringnum = int(math.sqrt(d2) / radius * args.numRings)
+            if ringnum >= args.numRings:
+                continue  # shouldn't happen for reasonable width floats
+
+            angle = math.atan2(delta[1], delta[0])
+            if angle < 0:
+                angle += 2 * math.pi
+
+            secnum = int(angle / (2 * math.pi) * args.numRadialCuts)
+
+            # More "shouldn't happen" floating point defense
+            if secnum < 0:
+                secnum = 0
+            if secnum >= args.numRadialCuts:
+                secnum = args.numRadialCuts - 1
+
+            modnum = int(ringnum * args.numRadialCuts + secnum)
+            modules[pixelJ, pixelI] = modnum
+
+
 for ifile in args.ifilenames:
     convertReader = gif.Reader()
     cfile = open(ifile, 'rb')
@@ -119,6 +191,13 @@ for ifile in args.ifilenames:
         sys.exit(1)
 
     output_block = []
+    preprocessed = None
+    counts = None
+    
+    if args.preproc:
+        preprocessed = bytearray(2 * numModules)
+        counts = [0] * numModules
+        sums = [0] * numModules
 
     for pixel in range(len(baselineBuffer)):
 
@@ -155,12 +234,35 @@ for ifile in args.ifilenames:
             output_block.append(appendval)
             totalRain += appendval
 
+            if args.preproc and appendval != 0:
+                modnum = modules[col][row]
+                sums[modnum] += appendval
+                counts[modnum] += 1
+                if appendval > preprocessed[2 * modnum]:
+                    preprocessed[2 * modnum] = appendval
+
     newfilename = ifile + '.bin'
 
+    if args.preproc:
+        for modnum in range(numModules):
+            if counts[modnum] > 0:
+                preprocessed[2 * modnum] = int (normalize(preprocessed[2 * modnum],
+                                                          args.heavy,
+                                                          len(args.intensities),
+                                                          5)
+                                                * 255)
+                preprocessed[2 * modnum + 1] = int (normalize(sums[modnum] / counts[modnum],
+                                                              args.heavy,
+                                                              len(args.intensities),
+                                                              5)
+                                                    * 255)
+
     writer = rpreddtypes.RpBinWriter()
-    writer.write(newfilename, newwidth, newheight, xoffset, yoffset,
-                 len(args.intensities),
-                 totalRain, output_block, [2, 3, 4])
+    writer.addRawdat(newwidth, newheight, xoffset, yoffset,
+                     len(args.intensities), output_block, [2, 3, 4])
+    writer.addPreparedData(2 * numModules, args.numRings,
+                           args.numRadialCuts, preprocessed)
+    writer.write(newfilename, len(args.intensities), totalRain)
 
     if (args.verbose):
         print('Wrote output file: {0}'.format(newfilename))

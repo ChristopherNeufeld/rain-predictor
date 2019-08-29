@@ -3,6 +3,7 @@
 import numpy as np
 import gzip
 import hashlib
+import abc
 
 
 # First, classes to manipulate the intermediate binary file.
@@ -21,7 +22,107 @@ class RpBinFileReadError(Exception):
         self.message = message
 
 
-class RpBinObj:
+# The abstract base class and sniffer/creator
+class RpBinABC(metaclass = abc.ABCMeta):
+
+    def __init__ (self):
+        pass
+
+    def read16bitInt(ba, index):
+        return ba[index] * 256 + ba[index+1], index+2
+
+    def write16bitInt(value, ba, index):
+        ba[index] = (value // 256) % 256
+        ba[index + 1] = value % 256
+        return index + 2
+
+    @abc.abstractmethod
+    def readFromByteArray(self, ba, index):
+        pass
+
+    @abc.abstractmethod
+    def writeToByteArray(self, ba, index):
+        pass
+
+    def peakMagicnum(ba, index):
+        return RpBinABC.read16bitInt(ba, index)
+
+    def loadPayload(ba, index):
+        mc, junk = RpBinABC.peakMagicnum(ba, index)
+        if mc == RpBinRawdat.rawdatMagicnum:
+            rval = RpBinRawdat()
+            newindex = rval.readFromByteArray(ba, index)
+            return rval, newindex
+        elif mc == RpBinPrepared.prepdatMagicnum:
+            rval = RpBinPrepared()
+            newindex = rval.readFromByteArray(ba, index)
+            return rval, newindex
+        else:
+            raise RpBinFileReadError('Unrecognized payload')
+            
+
+class RpBinPrepared(RpBinABC):
+
+    prepdatMagicnum = 0xa1b3
+
+    def __init__ (self):
+        self.version = 1
+        self.dataLength = 0
+        self.numModules = 0
+        self.numRings = 0
+        self.buffer = None
+
+    def setvals(self, datalength, numrings, numcuts, buffer):
+        self.dataLength = datalength
+        self.numModules = numrings * numcuts
+        self.numRings = numrings
+        self.buffer = buffer
+
+    def readFromByteArray(self, ba, index):
+        mn, index = RpBinABC.read16bitInt(ba, index)
+        if mn != RpBinPrepared.prepdatMagicnum:
+            raise RpBinFileReadError("Incorrect magic number in RpBinPrepared")
+
+        self.version, index = RpBinABC.read16bitInt(ba, index)
+        if self.version != 1:
+            raise RpBinFileReadError("Unrecognized version in RpBinPrepared")
+
+        self.dataLength, index = RpBinABC.read16bitInt(ba, index)
+        self.numModules, index = RpBinABC.read16bitInt(ba, index)
+        self.numRings, index = RpBinABC.read16bitInt(ba, index)
+        self.buffer = ba[index:index + self.dataLength]
+        index += self.dataLength
+        return index
+
+    def writeToByteArray(self):
+        rval = bytearray(5 * 2 + self.dataLength)
+        index = 0
+        index = RpBinABC.write16bitInt(RpBinPrepared.prepdatMagicnum, rval, index)
+        index = RpBinABC.write16bitInt(self.version, rval, index)
+        index = RpBinABC.write16bitInt(self.dataLength, rval, index)
+        index = RpBinABC.write16bitInt(self.numModules, rval, index)
+        index = RpBinABC.write16bitInt(self.numRings, rval, index)
+        rval[10:10 + self.dataLength] = self.buffer
+        return rval
+
+    def getDataLength(self):
+        return self.dataLength
+
+    def getNumModules(self):
+        return self.numModules
+
+    def getNumRings(self):
+        return self.numRings
+    
+    def getPreparedData(self):
+        return self.buffer
+
+
+
+class RpBinRawdat(RpBinABC):
+
+    rawdatMagicnum = 0xa1b2        
+
     def __init__ (self):
         self.width = -1
         self.height = -1
@@ -31,16 +132,7 @@ class RpBinObj:
         self.blen = -1
         self.buffer = None     # stored locally as a bytearray
         self.avgbuff = None
-        self.magicnum = 0xa1b2
         self.version = 1
-
-    def __read16bitInt(self, ba, index):
-        return ba[index] * 256 + ba[index+1], index+2
-
-    def __write16bitInt(self, value, ba, index):
-        ba[index] = (value // 256) % 256
-        ba[index + 1] = value % 256
-        return index + 2
 
     def setvals(self, width, height, xoffset, yoffset,
                 buffer):
@@ -57,7 +149,7 @@ class RpBinObj:
         self.blen = len(buffer)
 
     def getScaledVersion(self, edgeScale):
-        rval = RpBinObj()
+        rval = RpBinRawdat()
         newWidth = int((self.width - 1) // edgeScale + 1)
         newHeight = int((self.height - 1) // edgeScale + 1)
         rval.width = newWidth
@@ -100,17 +192,18 @@ class RpBinObj:
 
 
     def readFromByteArray(self, ba, index):
-        mn, index = self.__read16bitInt(ba, index)
-        if mn != self.magicnum:
-            raise RpBinFileReadError("Incorrect magic number in RpBinObj")
-        version, index = self.__read16bitInt(ba, index)
+
+        mn, index = RpBinABC.read16bitInt(ba, index)
+        if mn != RpBinRawdat.rawdatMagicnum:
+            raise RpBinFileReadError("Incorrect magic number in RpBinRawdat")
+        version, index = RpBinABC.read16bitInt(ba, index)
         if version != 1:
-            raise RpBinFileReadError("Unrecognized version in RpBinObj")
-        self.width, index = self.__read16bitInt(ba, index)
-        self.height, index = self.__read16bitInt(ba, index)
-        self.xoffset, index = self.__read16bitInt(ba, index)
-        self.yoffset, index = self.__read16bitInt(ba, index)
-        self.scaling, index = self.__read16bitInt(ba, index)
+            raise RpBinFileReadError("Unrecognized version in RpBinRawdat")
+        self.width, index = RpBinABC.read16bitInt(ba, index)
+        self.height, index = RpBinABC.read16bitInt(ba, index)
+        self.xoffset, index = RpBinABC.read16bitInt(ba, index)
+        self.yoffset, index = RpBinABC.read16bitInt(ba, index)
+        self.scaling, index = RpBinABC.read16bitInt(ba, index)
 
         self.blen = self.width * self.height
         self.buffer = ba[index:index + self.blen]
@@ -121,13 +214,13 @@ class RpBinObj:
     def writeToByteArray(self):
         rval = bytearray(7 * 2 + 2 * self.blen)
         index = 0
-        index = self.__write16bitInt(self.magicnum, rval, index)
-        index = self.__write16bitInt(self.version, rval, index)
-        index = self.__write16bitInt(self.width, rval, index)
-        index = self.__write16bitInt(self.height, rval, index)
-        index = self.__write16bitInt(self.xoffset, rval, index)
-        index = self.__write16bitInt(self.yoffset, rval, index)
-        index = self.__write16bitInt(self.scaling, rval, index)
+        index = RpBinABC.write16bitInt(RpBinRawdat.rawdatMagicnum, rval, index)
+        index = RpBinABC.write16bitInt(self.version, rval, index)
+        index = RpBinABC.write16bitInt(self.width, rval, index)
+        index = RpBinABC.write16bitInt(self.height, rval, index)
+        index = RpBinABC.write16bitInt(self.xoffset, rval, index)
+        index = RpBinABC.write16bitInt(self.yoffset, rval, index)
+        index = RpBinABC.write16bitInt(self.scaling, rval, index)
         rval[14:14 + self.blen] = self.buffer
         rval[14 + self.blen:] = self.avgbuff
         return rval
@@ -181,7 +274,7 @@ class RpBinReader(RpBinCommon):
         self.maxval = 0     # Largest value in the byte payload(s)
         self.totalrain = -1
         self.numPayloads = -1
-        self.elements = []
+        self.payloads = []
 
     def read(self, filename):
         self.readHeader(filename, True)
@@ -204,8 +297,8 @@ class RpBinReader(RpBinCommon):
             if vstr != self.VERSION_KEY:
                 raise RpBinFileReadError('File {0} is not a valid '
                                          'file'.format(filename))
-            if vnum != '3':
-                raise RpBinFileReadError('File {0} is version {1}'
+            if vnum != '4':
+                raise RpBinFileReadError('File {0} is version {1} '
                                          'which is not supported'
                                          'by this code'.format(filename,
                                                                vnum))
@@ -232,13 +325,24 @@ class RpBinReader(RpBinCommon):
             nbytes = len(btmp2)
             index = 0
             while index < nbytes:
-                rpbo = RpBinObj()
-                index = rpbo.readFromByteArray(btmp2, index)
-                self.elements.append(rpbo)
+                newobj, index = RpBinABC.loadPayload(btmp2, index)
+                self.payloads.append(newobj)
             
 
     def getVersion(self):
         return self.version
+
+    def getWidth(self):
+        return self.width
+
+    def getHeight(self):
+        return self.height
+
+    def getXOffset(self):
+        return self.xoffset
+
+    def getYOffset(self):
+        return self.yoffset
 
     def getTotalRain(self):
         if self.version < 2:
@@ -246,37 +350,65 @@ class RpBinReader(RpBinCommon):
                                      'by this file version.')
         return self.totalrain
 
+    def getMaxRainval(self):
+        return self.maxval
+
     def getScaledObject(self, edgeScaling):
-        for entry in self.elements:
+        for entry in self.payloads:
+            if not isinstance(entry, RpBinRawdat):
+                continue
+            
             if entry.getScaling() == edgeScaling:
                 return entry
 
         return None
-            
+
+    def getPreparedDataObject(self):
+        for entry in self.payloads:
+            if isinstance(entry, RpBinPrepared):
+                return entry
+
+        return None
+    
+
 
 class RpBinWriter(RpBinCommon):
     def __init__(self):
-        pass
+        self.payloads = []
 
-    def write(self, filename, width, height, xoffset, yoffset, maxval,
-              totalRain, values, list_of_rescales = None):
+    def clear(self):
+        self.payloads = []
+
+    def addRawdat(self, width, height, xoffset, yoffset, maxval, values,
+                  list_of_rescales = None):
+        rpbr = RpBinRawdat()
+        rpbr.setvals(width, height, xoffset, yoffset, values)
+        self.payloads.append(rpbr)
+        for scale in list_of_rescales:
+            nextobj = rpbr.getScaledVersion(scale)
+            self.payloads.append(nextobj)
+
+    def addPreparedData(self, datalength, numrings, numcuts, buffer):
+        rppd = RpBinPrepared()
+        rppd.setvals(datalength, numrings, numcuts, buffer)
+        self.payloads.append(rppd)
+
+        
+    def write(self, filename, maxval, totalRain):
         with open(filename, 'wb') as ofile:
             ofile.write('{0}\n'.format(self.HEADER_KEY)
                         .encode('ascii'))
-            ofile.write('{0} {1}\n'.format(self.VERSION_KEY, 3)
+            ofile.write('{0} {1}\n'.format(self.VERSION_KEY, 4)
                         .encode('ascii'))
             ofile.write('{0} {1}\n'.format(self.MAXVAL_KEY, maxval)
                         .encode('ascii'))
             ofile.write('{0} {1}\n'.format(self.TOTALRAIN_KEY, totalRain)
                         .encode('ascii'))
 
-            rpbo = RpBinObj()
-            rpbo.setvals(width, height, xoffset, yoffset, values)
-            ebuffer = rpbo.writeToByteArray()
-            for scale in list_of_rescales:
-                nextobj = rpbo.getScaledVersion(scale)
-                ebuffer += nextobj.writeToByteArray()
-            
+            ebuffer = bytearray()
+            for obj in self.payloads:
+                ebuffer += obj.writeToByteArray()
+
             ofile.write(gzip.compress(ebuffer))
 
 
@@ -300,6 +432,35 @@ def genhash(centre, senseList, heavyThreshold, seed = 0xabcddcba):
     return hasher.digest().hex()[0:8]
 
 
+def getModNum(pixel, centre, numrings, numcuts):
+    radius = centre[0]
+    r2 = centre[0] ** 2 + centre[1] ** 2
+    delta = [ pixel[0] - centre[0], pixel[1] - centre[1] ]
+    d2 = delta[0] ** 2 + delta[1] ** 2
+    if d2 > r2:
+        return -1
+    ringIndex = int(math.sqrt(d2) / radius * numrings)
+    if ringIndex >= numrings:
+        return -1
+    angle = math.atan2(delta[1], delta[0])
+    if angle < 0:
+        angle += 2 * math.pi
+
+    secIndex = int(angle / (2 * math.pi) * numcuts)
+    if secIndex < 0:
+        secIndex = 0
+    if secIndex >= numcuts:
+        secIndex = numcuts - 1
+
+    return int(ringIndex * numcuts + secIndex)
+
+
+def normalize(val, heavy, num_intensities, intensity_gap):
+    nDivs = num_intensities + intensity_gap
+    if (val < heavy):
+        return val / nDivs
+    else:
+        return (intensity_gap + val) / nDivs
 
 
 def unittest(scratchfilename):
