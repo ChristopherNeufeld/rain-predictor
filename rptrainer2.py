@@ -69,12 +69,17 @@ parser.add_argument('--heavy-rain-index', type=int, dest='heavy',
                     default=3, help='Lowest index in the colour table '
                     'that indicates heavy rain, where 1 is the '
                     'lightest rain.')
-parser.add_argument('--batchsize', type=int, dest='batchsize',
+parser.add_argument('--batch-size', type=int, dest='batchsize',
                     default=defBatchSize,
                     help='Override the batch size used for training.')
+parser.add_argument('--epochs', type=int, dest='nEpochs',
+                    default = 100,
+                    help = 'Set the number of epochs to train.')
 
 args = parser.parse_args()
 
+
+batchsize = args.batchsize
 
 trainGenerator = rpgenerator2.RPDataGenerator2(args.trainingset,
                                                args.pathfile,
@@ -82,7 +87,7 @@ trainGenerator = rpgenerator2.RPDataGenerator2(args.trainingset,
                                                args.centre,
                                                args.sensitive,
                                                args.heavy,
-                                               args.batchsize,)
+                                               batchsize)
 
 validationGenerator = rpgenerator2.RPDataGenerator2(args.testset,
                                                     args.pathfile,
@@ -90,7 +95,7 @@ validationGenerator = rpgenerator2.RPDataGenerator2(args.testset,
                                                     args.centre,
                                                     args.sensitive,
                                                     args.heavy,
-                                                    args.batchsize)
+                                                    batchsize)
 
 hashval = rpreddtypes.genhash(args.centre, args.sensitive, args.heavy)
 
@@ -109,7 +114,7 @@ if args.Continue:
 else:
 
     nInputs1 = trainGenerator.getInputSize()
-    inputs1 = Input(batch_shape = (args.batchsize, 6, nInputs1))
+    inputs1 = Input(batch_shape = (None, 6, nInputs1))
     
     time_layer = LSTM(lstm_module_nodes, stateful = False,
                       activation='relu')(inputs1)
@@ -127,15 +132,16 @@ mymodel.compile(loss='binary_crossentropy', optimizer='sgd')
 
 # if args.savefile:
 #     keras.callbacks.ModelCheckpoint(args.savefile, save_weights_only=False,
-#                                     save_best_only = False,
+#                                     save_best_only = True,
+#                                     monitor='val_loss',
 #                                     verbose=1,
 #                                     mode='auto', period=1)
 
 print ('Training\n')
 mymodel.fit_generator(generator = trainGenerator,
                       validation_data = validationGenerator,
-                      use_multiprocessing = False,
-                      epochs = 4,
+                      use_multiprocessing = True,
+                      epochs = args.nEpochs,
                       shuffle=False)
 
 if args.savefile:
