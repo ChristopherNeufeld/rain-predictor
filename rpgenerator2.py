@@ -11,6 +11,9 @@ import random
 
 class RPDataGenerator2(keras.utils.Sequence):
     'Produces data from the training set records we\'ve built'
+
+    # Magic behaviour, if batch_size is fractional, we make batches of
+    # size equal to that fraction of the total training set
     def __init__(self, sequence_file, path_file, veto_file,
                  centre, sensitive_region, heavyThreshold,
                  batch_size):
@@ -22,6 +25,7 @@ class RPDataGenerator2(keras.utils.Sequence):
         self.centre = centre
         self.sensitive_region = sensitive_region
         self.heavy = heavyThreshold
+        self.datasize = None
         self.num_intensities = None
         self.intensity_gap = 5    # to separate light from heavy rain
                                   # in the inputs
@@ -31,10 +35,11 @@ class RPDataGenerator2(keras.utils.Sequence):
         self.pathmap = {}
         self.seqmap = {}
         self.seqlist = []
-        self.numModules = 0
-        self.modules = []
 
-        self.buildModules()
+        self.useCachedData = False
+        self.fullsetX = None
+        self.fullsetY = None
+
         self.loadFromFiles()
 
     def loadFromFiles(self):
@@ -64,10 +69,23 @@ class RPDataGenerator2(keras.utils.Sequence):
                 self.seqmap[seqno] = list(map(int, fields[4:]))
                 self.seqlist.append(seqno)
 
+        seqno = self.seqlist[0]
+        filename = self.pathmap[seqno]
+        inputs = self.inputsFromOneFile(filename)
+        if self.batch_size == 0:
+            self.batch_size = len(self.seqlist)
+            self.cacheEntireInputSet()
+
+        if self.batch_size > 0 and self.batch_size < 1:
+            self.batch_size = int(self.batch_size * len(self.seqlist))
+
         self.shuffleSequence()
 
     def shuffleSequence(self):
         random.shuffle(self.seqlist)
+
+    def getBatchSize(self):
+        return self.batch_size
 
     def on_epoch_end(self):
         self.shuffleSequence()
@@ -76,51 +94,7 @@ class RPDataGenerator2(keras.utils.Sequence):
         return len(self.seqlist) // self.batch_size
 
     def getInputSize(self):
-        return 2 * len(self.modules)
-
-    def buildModules(self):
-        # For each module, we store a list of pixels.  We walk the
-        # pixel space and assign each one to a single module.  This
-        # does not, in general, guarantee that the modules have
-        # exactly the same number of pixels, but that's not an
-        # important consideration here.
-
-        self.numModules = self.ringcount * self.radialcuts
-        self.modules = numpy.full((2 * self.centre[0],
-                                   2 * self.centre[0]), -1)
-
-        # Modules are numbered clockwise (because this is a
-        # left-handded coordinate system) from the X axis, closest
-        # ring first.
-
-        radius = self.centre[0]
-        r2 = radius ** 2
-        for pixelI in range(2 * radius):
-            for pixelJ in range(2 * radius):
-                delta = [ pixelI - self.centre[0], pixelJ - self.centre[1] ]
-                d2 = delta[0] ** 2 + delta[1] ** 2
-                if d2 > r2:
-                    continue
-
-                ringnum = int(math.sqrt(d2) / radius * self.ringcount)
-                if ringnum >= self.ringcount:
-                    continue  # shouldn't happen for reasonable width floats
-
-                angle = math.atan2(delta[1], delta[0])
-                if angle < 0:
-                    angle += 2 * math.pi
-
-                secnum = int(angle / (2 * math.pi) * self.radialcuts)
-
-                # More "shouldn't happen" floating point defense
-                if secnum < 0:
-                    secnum = 0
-                if secnum >= self.radialcuts:
-                    secnum = self.radialcuts
-
-                modnum = int(ringnum * self.radialcuts + secnum)
-                self.modules[pixelJ, pixelI] = modnum
-
+        return self.datasize
 
     def inputsFromOneFile(self, filename):
         reader = rpreddtypes.RpBinReader()
@@ -129,8 +103,27 @@ class RPDataGenerator2(keras.utils.Sequence):
             self.num_intensities = reader.getMaxRainval()
 
         rpbo = reader.getPreparedDataObject()
+        if not self.datasize:
+            self.datasize = rpbo.getDataLength()
         return numpy.asarray(rpbo.getPreparedData()) / 255
 
+
+    def cacheEntireInputSet(self):
+        self.useCachedData = True
+        self.shuffle = False
+        self.fullsetX = numpy.empty([self.batch_size, 6, self.datasize])
+        self.fullsetY = numpy.empty([self.batch_size, 10])
+
+        for oib in range(self.batch_size):
+            base_seqno = self.seqlist[oib]
+            for ts in range(6):
+                seqno = base_seqno + ts
+                filename = self.pathmap[seqno]
+                inputs = self.inputsFromOneFile(filename)
+                self.fullsetX[oib][ts] = inputs
+
+            self.fullsetY[oib] = numpy.asarray(self.seqmap[base_seqno])
+        
         
     def __getitem__(self, index):
         'Return one batch'
@@ -138,12 +131,13 @@ class RPDataGenerator2(keras.utils.Sequence):
         # indexed by [offsetInBatch][timestep][valindex]
         # Hand the y-vals back in another array
 
-        print ('Loading one batch\n')
-        rvalX = numpy.empty([self.batch_size, 6, 2 * self.numModules])
+        if self.useCachedData:
+            return self.fullsetX, self.fullsetY
+
+        rvalX = numpy.empty([self.batch_size, 6, self.datasize])
         rvalY = numpy.empty([self.batch_size, 10])
 
         for oib in range(self.batch_size):
-            print ('.', end='', flush=True)
             base_seqno = self.seqlist[index * self.batch_size + oib]
             for ts in range(6):
                 seqno = base_seqno + ts
@@ -153,5 +147,4 @@ class RPDataGenerator2(keras.utils.Sequence):
 
             rvalY[oib] = numpy.asarray(self.seqmap[base_seqno])
 
-        print ('Batch loaded\n')
         return rvalX, rvalY
