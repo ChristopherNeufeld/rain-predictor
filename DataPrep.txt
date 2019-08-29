@@ -1,6 +1,6 @@
 Here's the data preparation sequence:
 
-make-rain-inputs.py --baseline consensus.gif --with=480 --height=480 pics/*.gif
+make-rain-inputs.py --baseline consensus.gif --width=480 --height=480 pics/*.gif
 
 prepare-true-vals.py pics/*.bin > tvs.txt
 
