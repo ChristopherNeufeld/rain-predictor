@@ -1,0 +1,17 @@
+Here's the data preparation sequence:
+
+make-rain-inputs.py --baseline consensus.gif --with=480 --height=480 pics/*.gif
+
+prepare-true-vals.py pics/*.bin > tvs.txt
+
+get-training-set.py tvs.txt > candidates.txt
+
+make-vetoes.py --write-thinned-data thinned.txt \
+	--candidates candidates.txt  \
+	--sequences tvs.txt
+
+datasplit.py --candidates thinned.txt --training-file training.txt \
+	--validation-file holdout.txt
+
+rptrainer2.py --pathfile tvs.txt --training-set training.txt \
+	--holdout holdout.txt
