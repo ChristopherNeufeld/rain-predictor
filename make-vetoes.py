@@ -36,6 +36,11 @@ parser.add_argument('--veto-keepstride', type=int,
                     help='When writing vetoes, will exclude each '
                     'Nth entry from the list to ensure we don\'t '
                     'produce data that\'s too lopsided.')
+parser.add_argument('--write-thinned-data', type=str,
+                    dest='thinnedOutput',
+                    help='Pass a filename into which the thinned '
+                    'data will be written, the vetoes having '
+                    'been applied.')
 parser.add_argument('--write-vetoes', type=str,
                     dest='vetofile',
                     help='If set, writes an unsorted list of '
@@ -91,14 +96,28 @@ if args.plotdat:
     for i in range(len(sumIntensities)):
         print (sumIntensities[i][0], i)
 
+
+vetoes=[]
+recordsToDiscard = int(len(sumIntensities) * args.vetofrac)
+for i in range(len(sumIntensities)):
+    if recordsToDiscard > 0:
+        if i % args.keepstride != 0:
+            vetoes.append(sumIntensities[i][1])
+            recordsToDiscard -= 1
+    else:
+        break
+        
 if args.vetofile:
-    recordsToDiscard = int(len(sumIntensities) * args.vetofrac)
     with open(args.vetofile, 'w') as ofile:
-        for i in range(len(sumIntensities)):
-            if recordsToDiscard > 0:
-                if i % args.keepstride != 0:
-                    ofile.write('{}\n'.format(sumIntensities[i][1]))
-                    recordsToDiscard -= 1
-            else:
-                break
-                    
+        for v in vetoes:
+            ofile.write('{}\n'.format(v))
+
+if args.thinnedOutput:
+    with open(args.candidates, 'r') as ifile:
+        with open(args.thinnedOutput, "w") as ofile:
+            for record in ifile:
+                fields = record.split()
+                seqno = int(fields[0])
+                if seqno in vetoes:
+                    continue
+                ofile.write(record)
