@@ -49,12 +49,13 @@ parser.add_argument('truevalfile', type=str, metavar='truevalfile',
                     help='Filename to process')
 
 parser.add_argument('--override-centre', type=list, dest='centre',
-                    default=[240,239], help='Set a new location for '
+                    default=[239,240], help='Set a new location for '
                     'the pixel coordinates of the radar station')
 parser.add_argument('--override-sensitive-region', type=list,
                     dest='sensitive',
-                    default=[[264,204], [264,205], [265,204], [265,205]],
-                    help='Set a new list of sensitive pixels')
+                    default=[[204,264], [205,264], [204,265], [205,265]],
+                    help='Set a new list of sensitive pixels.  '
+                    'In row/col order.')
 parser.add_argument('--rotations', type=int, dest='rotations',
                     default=0, help='Number of synthetic data points '
                     'to create (via rotation) for each input data point')

@@ -128,9 +128,9 @@ if args.preproc:
 
     radius = int(newwidth / 2)
     r2 = radius ** 2
-    for pixelI in range(2 * radius):
-        for pixelJ in range(2 * radius):
-            delta = [ pixelI - radius, pixelJ - radius ]
+    for pixelCol in range(2 * radius):
+        for pixelRow in range(2 * radius):
+            delta = [ pixelCol - radius, pixelRow - radius ]
             d2 = delta[0] ** 2 + delta[1] ** 2
             if d2 > r2:
                 continue
@@ -152,7 +152,7 @@ if args.preproc:
                 secnum = args.numRadialCuts - 1
 
             modnum = int(ringnum * args.numRadialCuts + secnum)
-            modules[pixelJ, pixelI] = modnum
+            modules[pixelRow, pixelCol] = modnum
 
 
 for ifile in args.ifilenames:

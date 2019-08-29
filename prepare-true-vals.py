@@ -153,12 +153,12 @@ def rainPresent(binReader, centre, sensitivePixels, heavyVal):
     checkPhantom = True
     xoffset = rpbo.getXOffset()
     yoffset = rpbo.getYOffset()
-    offset = [xoffset, yoffset]
+    offset = [yoffset, xoffset]
     dataWidth = rpbo.getWidth()
     dataHeight = rpbo.getHeight()
     data = rpbo.getNumpyArrayMax()
     for pixel in sensitivePixels:
-        pval = data[pixel[0] - xoffset][pixel[1] - yoffset]
+        pval = data[pixel[0] - yoffset][pixel[1] - xoffset]
         if pval > 0:
             anyRain = 1
             if pval > 1:
@@ -182,11 +182,11 @@ def rainPresent(binReader, centre, sensitivePixels, heavyVal):
 
     nPixels = 0
     nSetPixels = 0
-    for probeY in range(-phantomRainRadius, phantomRainRadius):
+    for probeRow in range(-phantomRainRadius, phantomRainRadius):
         deltaX = int(math.sqrt(phantomRainRadius ** 2 - probeY ** 2))
-        for probeX in range(-deltaX, deltaX):
-            probePt = [ centre[0] + probeX - offset[0],
-                        centre[1] + probeY - offset[1]]
+        for probeCol in range(-deltaX, deltaX):
+            probePt = [ centre[0] + probeRow - offset[0],
+                        centre[1] + probeCol - offset[1]]
             if ( probePt[0] < 0 or probePt[0] >= dataWidth
                  or probePt[1] < 0 or probePt[1] >= dataHeight ):
                 continue
@@ -218,12 +218,13 @@ parser.add_argument('ifilenames', type=str, metavar='filename',
                     nargs='+', help='Filenames to process')
 
 parser.add_argument('--override-centre', type=list, dest='centre',
-                    default=[240,239], help='Set a new location for '
+                    default=[239,240], help='Set a new location for '
                     'the pixel coordinates of the radar station')
 parser.add_argument('--override-sensitive-region', type=list,
                     dest='sensitive',
-                    default=[[264,204], [264,205], [265,204], [265,205]],
-                    help='Set a new list of sensitive pixels')
+                    default=[[204,264], [205,264], [204,265], [205,265]],
+                    help='Set a new list of sensitive pixels.  '
+                    'In row,col order')
 parser.add_argument('--rotations', type=int, dest='rotations',
                     default=0, help='Number of synthetic data points '
                     'to create (via rotation) for each input data point')

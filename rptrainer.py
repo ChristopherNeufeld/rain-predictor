@@ -37,6 +37,9 @@ synth_layer_nodes = 200
 num_outputs = 10
 
 
+print ('This code is no longer considered useful')
+sys.exit(1)
+
 parser = argparse.ArgumentParser(description='Train the rain '
                                  'prediction network.')
 parser.add_argument('--continue', dest='Continue',
