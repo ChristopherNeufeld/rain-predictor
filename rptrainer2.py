@@ -117,6 +117,7 @@ parser.add_argument('--validation-frac', type=float, dest='vFrac',
                     'be set aside for validation rather than '
                     'training.')
 parser.add_argument('--holdout', type=str, dest='holdout',
+                    action='append',
                     help='The holdout dataset used for final '
                     'validation')
 parser.add_argument('--epochs', type=int, dest='nEpochs',
@@ -138,7 +139,8 @@ datasize = None
 npts = None
 hashval = None
 
-xvals, yvals, datasize, npts, hashval = getDataVectors(args.trainingset, args.pathfile)
+if args.nEpochs > 0:
+    xvals, yvals, datasize, npts, hashval = getDataVectors(args.trainingset, args.pathfile)
 
 if not args.nohash:
     if hashval != '61a6507784597dc4':
@@ -167,11 +169,12 @@ else:
 
     mymodel = Model(inputs=[inputs1], outputs=[output_layer])
 
-mymodel.compile(loss='binary_crossentropy', optimizer='sgd')
+    mymodel.compile(loss='binary_crossentropy', optimizer='sgd')
 
 
-mymodel.fit(x = xvals, y = yvals, epochs = args.nEpochs, verbose=1,
-            validation_split = args.vFrac, shuffle = True)
+if args.nEpochs > 0:
+    mymodel.fit(x = xvals, y = yvals, epochs = args.nEpochs, verbose=1,
+                validation_split = args.vFrac, shuffle = True)
 
 
 # My confusion matrix is  TP:  0,0
@@ -185,8 +188,8 @@ hjunk1 = None
 hnpts = None
 hjunk2 = None
 
-if args.holdout:
-    hxvals, hyvals, hjunk1, hnpts, hjunk2 = getDataVectors(args.holdout, args.pathfile)
+for holdoutfile in args.holdout:
+    hxvals, hyvals, hjunk1, hnpts, hjunk2 = getDataVectors(holdoutfile, args.pathfile)
 
     hypred = mymodel.predict(x = hxvals)
     confusion = np.zeros((10, 2, 2), dtype=np.int64)
@@ -203,7 +206,7 @@ if args.holdout:
                 else:
                     confusion[bitnum, 1, 0] += 1    # False negative
 
-    print('confusion= {}'.format(confusion))
+    print('{0} confusion= {1}'.format(holdoutfile, confusion))
 
     print('RPRED: When rain fell in the next hour, we matched {0}.'
           .format(confusion[0,1,1] / (confusion[0,1,1] + confusion[0,1,0])))
