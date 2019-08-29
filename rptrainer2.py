@@ -5,6 +5,7 @@
 import rpreddtypes
 import argparse
 import random
+import hashlib
 
 import tensorflow as tf
 # from tensorflow.keras.callbacks import TensorBoard, EarlyStopping
@@ -32,10 +33,8 @@ def getDataVectors(sequence_file, path_file):
         for record in ifile:
             fields = record.split()
             seqno = int(fields[0])
-            seqmap[seqno] = list(map(int, fields[4:]))
+            seqmap[seqno] = list(map(int, fields[5:]))
             seqlist.append(seqno)
-
-    random.shuffle(seqlist)
 
     # Need to load the size of the data samples by loading one data
     # file up front
@@ -61,7 +60,12 @@ def getDataVectors(sequence_file, path_file):
 
         rvalY[index] = np.asarray(seqmap[base_seqno])
 
-    return rvalX, rvalY, datasize
+    hasher = hashlib.sha256()
+    hasher.update(rvalX.data.tobytes())
+    hasher.update(rvalY.data.tobytes())
+    hashval = (hasher.hexdigest())[-16:]
+
+    return rvalX, rvalY, datasize, len(seqlist), hashval
 
 
 
@@ -98,9 +102,18 @@ parser.add_argument('--validation-frac', type=float, dest='vFrac',
                     help = 'That fraction of the training set to '
                     'be set aside for validation rather than '
                     'training.')
+parser.add_argument('--holdout', type=str, dest='holdout',
+                    help='The holdout dataset used for final '
+                    'validation')
 parser.add_argument('--epochs', type=int, dest='nEpochs',
                     default = 100,
                     help = 'Set the number of epochs to train.')
+parser.add_argument('--ignore-hash', type=bool, dest='nohash',
+                    default = False,
+                    help = 'Ignore unexpected hash values in '
+                    'the input data.  Hash verification is used '
+                    'to ensure that comparison runs all are '
+                    'exposed to the same dataset.')
 
 args = parser.parse_args()
 
@@ -108,8 +121,16 @@ args = parser.parse_args()
 xvals = None
 yvals = None
 datasize = None
+npts = None
+hashval = None
 
-xvals, yvals, datasize = getDataVectors(args.trainingset, args.pathfile)
+xvals, yvals, datasize, npts, hashval = getDataVectors(args.trainingset, args.pathfile)
+
+if not args.nohash:
+    if hashval != '61a6507784597dc4':
+        print('Unexpected hash value {0}.  Input data may have changed.'
+              .format(hashval))
+        sys.exit(1)
     
 
 if args.Continue:
@@ -132,22 +153,53 @@ else:
 
     mymodel = Model(inputs=[inputs1], outputs=[output_layer])
 
-print('Compiling\n')
 mymodel.compile(loss='binary_crossentropy', optimizer='sgd')
-#                metrics=[tf.keras.metrics.FalsePositives(),
-#                         tf.keras.metrics.FalseNegatives()])
 
 
-# if args.savefile:
-#     keras.callbacks.ModelCheckpoint(args.savefile, save_weights_only=False,
-#                                     save_best_only = True,
-#                                     monitor='val_loss',
-#                                     verbose=1,
-#                                     mode='auto', period=1)
-
-print ('Training\n')
 mymodel.fit(x = xvals, y = yvals, epochs = args.nEpochs, verbose=1,
             validation_split = args.vFrac, shuffle = True)
+
+
+# My confusion matrix is  TP:  0,0
+#                         FP:  0,1
+#                         FN:  1,0
+#                         TN:  1,1
+
+hxvals = None
+hyvals = None
+hjunk1 = None
+hnpts = None
+hjunk2 = None
+
+if args.holdout:
+    hxvals, hyvals, hjunk1, hnpts, hjunk2 = getDataVectors(args.holdout, args.pathfile)
+
+    hypred = mymodel.predict(x = hxvals)
+    confusion = np.zeros((10, 2, 2), dtype=np.int64)
+    for datapt in range(hnpts):
+        for bitnum in range(10):
+            if hyvals[datapt, bitnum] == 0:
+                if hypred[datapt, bitnum] < 0.5:
+                    confusion[bitnum, 0, 0] += 1       # True negative
+                else:
+                    confusion[bitnum, 0, 1] += 1       # False positive
+            else:
+                if hypred[datapt, bitnum] > 0.5:
+                    confusion[bitnum, 1, 1] += 1    # True positive
+                else:
+                    confusion[bitnum, 1, 0] += 1    # False negative
+
+    print('confusion= {}'.format(confusion))
+
+    print('RPRED: When rain fell in the next hour, we matched {0}.'
+          .format(confusion[0,1,1] / (confusion[0,1,1] + confusion[0,1,0])))
+    print('RPRED: When rain fell in the second hour, we matched {0}.'
+          .format(confusion[2,1,1] / (confusion[2,1,1] + confusion[2,1,0])))
+    print('RPRED: When no rain fell in the next hour, we matched {0}.'
+          .format(confusion[0,0,0] / (confusion[0,0,0] + confusion[0,0,1])))
+    print('RPRED: When no rain fell in the second hour, we matched {0}.'
+          .format(confusion[2,0,0] / (confusion[2,0,0] + confusion[2,0,1])))
+
 
 
 if args.savefile:
