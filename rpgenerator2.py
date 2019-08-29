@@ -1,5 +1,10 @@
 #! /usr/bin/python3
 
+
+# THIS FILE IS NOW OBSOLETE.  FUNCTIONALITY ENTIRELY SUBSUMED INTO
+# rptrainer2.py
+
+
 # The data generator for the rain predictor
 import keras
 # from tensorflow import keras
@@ -79,16 +84,19 @@ class RPDataGenerator2(keras.utils.Sequence):
         if self.batch_size > 0 and self.batch_size < 1:
             self.batch_size = int(self.batch_size * len(self.seqlist))
 
-        self.shuffleSequence()
+        if self.batch_size < len(self.seqlist):
+            self.shuffleSequence()
+
 
     def shuffleSequence(self):
         random.shuffle(self.seqlist)
 
+    def on_epoch_end(self):
+        if self.batch_size < len(self.seqlist):
+            self.shuffleSequence()
+
     def getBatchSize(self):
         return self.batch_size
-
-    def on_epoch_end(self):
-        self.shuffleSequence()
 
     def __len__(self):
         return len(self.seqlist) // self.batch_size
