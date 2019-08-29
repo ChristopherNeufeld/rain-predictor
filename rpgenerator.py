@@ -63,7 +63,7 @@ class RPDataGenerator(keras.utils.Sequence):
                     continue
                 if seqno in vetolist:
                     continue
-                self.seqmap[seqno] = list(map(int, fields[4:]))
+                self.seqmap[seqno] = list(map(int, fields[5:]))
                 self.seqlist.append(seqno)
 
         if self.shuffle:
