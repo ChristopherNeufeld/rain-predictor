@@ -145,7 +145,7 @@ if args.nEpochs > 0:
     xvals, yvals, datasize, npts, hashval = getDataVectors(args.trainingset, args.pathfile)
 
 if not args.nohash:
-    if hashval != '61a6507784597dc4':
+    if hashval != '048073a92f6dd2bb':
         print('Unexpected hash value {0}.  Input data may have changed.'
               .format(hashval))
         sys.exit(1)
