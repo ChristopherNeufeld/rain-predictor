@@ -144,11 +144,11 @@ hashval = None
 if args.nEpochs > 0:
     xvals, yvals, datasize, npts, hashval = getDataVectors(args.trainingset, args.pathfile)
 
-if not args.nohash:
-    if hashval != '048073a92f6dd2bb':
-        print('Unexpected hash value {0}.  Input data may have changed.'
-              .format(hashval))
-        sys.exit(1)
+    if not args.nohash:
+        if hashval != '048073a92f6dd2bb':
+            print('Unexpected hash value {0}.  Input data may have changed.'
+                  .format(hashval))
+            sys.exit(1)
     
 
 if args.Continue:
@@ -175,8 +175,16 @@ else:
 
 
 if args.nEpochs > 0:
+
+    cb1 = keras.callbacks.ModelCheckpoint('cb' + args.savefile,
+                                          save_weights_only=False,
+                                          save_best_only = True,
+                                          verbose=1,
+                                          mode='auto', period=1)
+
     mymodel.fit(x = xvals, y = yvals, epochs = args.nEpochs, verbose=1,
-                validation_split = args.vFrac, shuffle = True)
+                validation_split = args.vFrac, shuffle = True,
+                callbacks = [ cb1 ])
 
 
 # My confusion matrix is  TP:  0,0
@@ -282,6 +290,6 @@ if args.holdout0 or args.holdout1:
 
 
 
-if args.savefile:
+if args.savefile and args.nEpochs > 0:
     print('Saving model\n')
     mymodel.save(args.savefile)
