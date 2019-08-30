@@ -183,6 +183,7 @@ if args.nEpochs > 0:
                                           mode='auto', period=1)
 
     mymodel.fit(x = xvals, y = yvals, epochs = args.nEpochs, verbose=1,
+                batch_size = 256,
                 validation_split = args.vFrac, shuffle = True,
                 callbacks = [ cb1 ])
 
