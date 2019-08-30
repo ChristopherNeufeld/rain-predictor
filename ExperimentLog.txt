@@ -1,0 +1,97 @@
+Running over 400 epochs unless othewise indicated
+
+
+Base setup.  First run.   SGD optimizer
+
+Git version  (git rev-parse HEAD):
+5ed01db36ee8baf7087d8241710500e11cddb74a
+
+
+5068/5068 [==============================] - 14s 3ms/step - loss: 0.0638 - val_loss: 0.0666
+RPRED:  Rain starting in 1-2 hours, warning rate= 0.564935064935065
+RPRED:  Rain starting in 3-6 hours, warning rate= 0.48221343873517786
+RPRED:  Rain stopping in next hour, warning rate= 0.29411764705882354
+RPRED:  Rain stopping in 3-6 hours, warning rate= 0.0
+Total confusion= [[[394  30]
+  [ 65 158]]
+
+ [[558   9]
+  [ 14  66]]
+
+ [[346  19]
+  [116 166]]
+
+ [[556  12]
+  [ 20  59]]
+
+ [[367  53]
+  [ 76 151]]
+
+ [[565  13]
+  [ 23  46]]
+
+ [[370  27]
+  [114 136]]
+
+ [[562   5]
+  [ 41  39]]
+
+ [[375  49]
+  [107 116]]
+
+ [[565  14]
+  [ 25  43]]]
+Saving model
+
+
+real    97m39.950s
+user    313m16.428s
+sys     6m25.621s
+
+val_loss still improving after 400 epochs
+
+
+
+
+Experiment #1:  RMSProp optimizer
+
+Git version
+011ea4e50700a7a1eaae7246364f306ec200e141
+
+RPRED:  Rain starting in 1-2 hours, warning rate= 0.8841463414634146
+RPRED:  Rain starting in 3-6 hours, warning rate= 0.8143459915611815
+RPRED:  Rain stopping in next hour, warning rate= 0.875
+RPRED:  Rain stopping in 3-6 hours, warning rate= 0.0
+Total confusion= [[[361  56]
+  [ 31 199]]
+
+ [[575   4]
+  [ 19  49]]
+
+ [[330  31]
+  [ 41 245]]
+
+ [[543   8]
+  [ 21  75]]
+
+ [[336  54]
+  [ 26 231]]
+
+ [[546  12]
+  [ 21  68]]
+
+ [[390  20]
+  [ 59 178]]
+
+ [[549  13]
+  [ 21  64]]
+
+ [[408  31]
+  [ 42 166]]
+
+ [[561  23]
+  [ 21  42]]]
+
+real    102m22.636s
+user    350m40.895s
+sys     6m56.912s
