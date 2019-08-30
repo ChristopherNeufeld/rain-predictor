@@ -171,7 +171,7 @@ else:
 
     mymodel = Model(inputs=[inputs1], outputs=[output_layer])
 
-    mymodel.compile(loss='binary_crossentropy', optimizer='sgd')
+    mymodel.compile(loss='binary_crossentropy', optimizer='rmsprop')
 
 
 if args.nEpochs > 0:
