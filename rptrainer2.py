@@ -116,10 +116,12 @@ parser.add_argument('--validation-frac', type=float, dest='vFrac',
                     help = 'That fraction of the training set to '
                     'be set aside for validation rather than '
                     'training.')
-parser.add_argument('--holdout', type=str, dest='holdout',
-                    action='append',
+parser.add_argument('--holdout0', type=str, dest='holdout0',
                     help='The holdout dataset used for final '
-                    'validation')
+                    'validation, no rain at present')
+parser.add_argument('--holdout1', type=str, dest='holdout1',
+                    help='The holdout dataset used for final '
+                    'validation, raining at present')
 parser.add_argument('--epochs', type=int, dest='nEpochs',
                     default = 100,
                     help = 'Set the number of epochs to train.')
@@ -188,34 +190,95 @@ hjunk1 = None
 hnpts = None
 hjunk2 = None
 
-for holdoutfile in args.holdout:
-    hxvals, hyvals, hjunk1, hnpts, hjunk2 = getDataVectors(holdoutfile, args.pathfile)
-
-    hypred = mymodel.predict(x = hxvals)
+if args.holdout0 or args.holdout1:
     confusion = np.zeros((10, 2, 2), dtype=np.int64)
-    for datapt in range(hnpts):
-        for bitnum in range(10):
-            if hyvals[datapt, bitnum] == 0:
-                if hypred[datapt, bitnum] < 0.5:
-                    confusion[bitnum, 0, 0] += 1       # True negative
-                else:
-                    confusion[bitnum, 0, 1] += 1       # False positive
-            else:
-                if hypred[datapt, bitnum] > 0.5:
-                    confusion[bitnum, 1, 1] += 1    # True positive
-                else:
-                    confusion[bitnum, 1, 0] += 1    # False negative
 
-    print('{0} confusion= {1}'.format(holdoutfile, confusion))
+    if args.holdout0:
+        # This is the branch when it is not currently raining, but it
+        # will rain soon.
 
-    print('RPRED: When rain fell in the next hour, we matched {0}.'
-          .format(confusion[0,1,1] / (confusion[0,1,1] + confusion[0,1,0])))
-    print('RPRED: When rain fell in the second hour, we matched {0}.'
-          .format(confusion[2,1,1] / (confusion[2,1,1] + confusion[2,1,0])))
-    print('RPRED: When no rain fell in the next hour, we matched {0}.'
-          .format(confusion[0,0,0] / (confusion[0,0,0] + confusion[0,0,1])))
-    print('RPRED: When no rain fell in the second hour, we matched {0}.'
-          .format(confusion[2,0,0] / (confusion[2,0,0] + confusion[2,0,1])))
+        hxvals, hyvals, hjunk1, hnpts, hjunk2 = getDataVectors(args.holdout0, args.pathfile)
+
+        willRainIn2 = 0
+        predWillRainIn1or2 = 0
+        willRainIn3plus = 0
+        predWillRainIn3plus = 0
+        
+        hypred = mymodel.predict(x = hxvals)
+        for datapt in range(hnpts):
+
+            if hyvals[datapt, 0] == 0 and hyvals[datapt, 2] == 1:
+                willRainIn2 += 1
+                if hpred[datapt, 0] >= 0.5 or hpred[datapt, 2] >= 0.5:
+                    predWillRainIn1or2 += 1
+
+            if hyvals[datapt, 0] == 0 and hyvals[datapt, 2] == 0:
+                willRainIn3plus += 1
+                if hpred[datapt, 4] >= 0.5 or hpred[datapt, 6] >= 0.5 or hpred[datapt, 8] >= 0.5:
+                    predWillRainIn3plus += 1
+            
+            for bitnum in range(10):
+                if hyvals[datapt, bitnum] == 0:
+                    if hypred[datapt, bitnum] < 0.5:
+                        confusion[bitnum, 0, 0] += 1       # True negative
+                    else:
+                        confusion[bitnum, 0, 1] += 1       # False positive
+                else:
+                    if hypred[datapt, bitnum] >= 0.5:
+                        confusion[bitnum, 1, 1] += 1    # True positive
+                    else:
+                        confusion[bitnum, 1, 0] += 1    # False negative
+
+        print('RPRED:  Rain starting in 1-2 hours, warning rate= {}'
+              .format(predWillRainIn1or2 / willRainIn2))
+        print('RPRED:  Rain starting in 3-6 hours, warning rate= {}'
+              .format(predWillRainIn3plus / willRainIn3plus))
+        
+        
+    if args.holdout1:
+        hxvals, hyvals, hjunk1, hnpts, hjunk2 = getDataVectors(args.holdout1, args.pathfile)
+
+        willStopIn1 = 0
+        predWillStopIn1 = 0
+        willStopIn3plus = 0
+        predWillStopIn3plus = 0
+
+        hypred = mymodel.predict(x = hxvals)
+        for datapt in range(hnpts):
+
+            if hyvals[datapt, 0] == 0:
+                willStopIn1 += 1
+                if hypred[datapt, 0] >= 0.5:
+                    predWillStopIn1 += 1
+
+            if hyvals[datapt, 0] == 1 and hyvals[datapt, 2] == 1:
+                willStopIn3plus += 1
+                if ( ( hypred[datapt, 0] < 0.5
+                       and hypred[datapt, 2] < 0.5 )
+                     and (hypred[datapt, 4] >= 0.5
+                          or hypred[datapt, 6] >= 0.5
+                          or hypred[datapt, 8] >= 0.5)):
+                    predWillStopIn3plus += 1
+                    
+            for bitnum in range(10):
+                if hyvals[datapt, bitnum] == 0:
+                    if hypred[datapt, bitnum] < 0.5:
+                        confusion[bitnum, 0, 0] += 1       # True negative
+                    else:
+                        confusion[bitnum, 0, 1] += 1       # False positive
+                else:
+                    if hypred[datapt, bitnum] > 0.5:
+                        confusion[bitnum, 1, 1] += 1    # True positive
+                    else:
+                        confusion[bitnum, 1, 0] += 1    # False negative
+
+        print('RPRED:  Rain stopping in next hour, warning rate= {}'
+              .format(predWillStopIn1 / willStopIn1))
+        print('RPRED:  Rain stopping in 3-6 hours, warning rate= {}'
+              .format(predWillStopIn3plus / willStopIn3plus))
+            
+
+    print('Total confusion= {1}'.format(confusion))
 
 
 
