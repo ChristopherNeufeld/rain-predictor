@@ -183,8 +183,8 @@ def rainPresent(binReader, centre, sensitivePixels, heavyVal):
     nPixels = 0
     nSetPixels = 0
     for probeRow in range(-phantomRainRadius, phantomRainRadius):
-        deltaX = int(math.sqrt(phantomRainRadius ** 2 - probeY ** 2))
-        for probeCol in range(-deltaX, deltaX):
+        deltaCol = int(math.sqrt(phantomRainRadius ** 2 - probeRow ** 2))
+        for probeCol in range(-deltaCol, deltaCol):
             probePt = [ centre[0] + probeRow - offset[0],
                         centre[1] + probeCol - offset[1]]
             if ( probePt[0] < 0 or probePt[0] >= dataWidth
