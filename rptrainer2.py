@@ -209,12 +209,12 @@ if args.holdout0 or args.holdout1:
 
             if hyvals[datapt, 0] == 0 and hyvals[datapt, 2] == 1:
                 willRainIn2 += 1
-                if hpred[datapt, 0] >= 0.5 or hpred[datapt, 2] >= 0.5:
+                if hypred[datapt, 0] >= 0.5 or hypred[datapt, 2] >= 0.5:
                     predWillRainIn1or2 += 1
 
             if hyvals[datapt, 0] == 0 and hyvals[datapt, 2] == 0:
                 willRainIn3plus += 1
-                if hpred[datapt, 4] >= 0.5 or hpred[datapt, 6] >= 0.5 or hpred[datapt, 8] >= 0.5:
+                if hypred[datapt, 4] >= 0.5 or hypred[datapt, 6] >= 0.5 or hypred[datapt, 8] >= 0.5:
                     predWillRainIn3plus += 1
             
             for bitnum in range(10):
@@ -278,7 +278,7 @@ if args.holdout0 or args.holdout1:
               .format(predWillStopIn3plus / willStopIn3plus))
             
 
-    print('Total confusion= {1}'.format(confusion))
+    print('Total confusion= {0}'.format(confusion))
 
 
 
