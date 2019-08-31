@@ -172,7 +172,7 @@ else:
     mymodel = Model(inputs=[inputs1], outputs=[output_layer])
 
     mymodel.compile(loss='binary_crossentropy',
-                    optimizer=keras.optimizers.Adam())
+                    optimizer=keras.optimizers.Adamax())
 
 
 if args.nEpochs > 0:
