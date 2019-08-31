@@ -2298,3 +2298,86 @@ Total confusion= [[[363  44]
  [[568  14]
   [ 26  39]]]
 
+
+
+Experiment #6:  Adam optimizer
+
+Git version a233ca6d94739ee90133cda37836a3c52ffbbf9b
+
+No time values.  Interrupted while overtraining.
+
+RPRED:  Rain starting in 1-2 hours, warning rate= 0.8287671232876712
+RPRED:  Rain starting in 3-6 hours, warning rate= 0.9004149377593361
+RPRED:  Rain stopping in next hour, warning rate= 0.38461538461538464
+RPRED:  Rain stopping in 3-6 hours, warning rate= 0.0
+Total confusion= [[[358  42]
+  [ 23 224]]
+
+ [[545  14]
+  [ 10  78]]
+
+ [[332  24]
+  [ 43 248]]
+
+ [[541   9]
+  [ 10  87]]
+
+ [[371  30]
+  [ 39 207]]
+
+ [[542  18]
+  [ 22  65]]
+
+ [[370  38]
+  [ 44 195]]
+
+ [[555  14]
+  [ 26  52]]
+
+ [[398  28]
+  [ 34 187]]
+
+ [[569  14]
+  [ 13  51]]]
+
+
+Experiment #7.  Adamax optimizer
+
+Git version  e6e2170970baf7af7f35c26a2d3e3a23f17cd40e
+
+
+No time information, interrupted when overtraining.
+
+RPRED:  Rain starting in 1-2 hours, warning rate= 0.8417721518987342
+RPRED:  Rain starting in 3-6 hours, warning rate= 0.8902439024390244
+RPRED:  Rain stopping in next hour, warning rate= 0.5333333333333333
+RPRED:  Rain stopping in 3-6 hours, warning rate= 0.0
+Total confusion= [[[385  34]
+  [ 22 206]]
+
+ [[555  15]
+  [ 20  57]]
+
+ [[357  15]
+  [ 52 223]]
+
+ [[573   2]
+  [ 21  51]]
+
+ [[393  31]
+  [ 26 197]]
+
+ [[561   6]
+  [ 15  65]]
+
+ [[399  24]
+  [ 49 175]]
+
+ [[569  12]
+  [ 15  51]]
+
+ [[404  36]
+  [ 34 173]]
+
+ [[579  15]
+  [ 16  37]]]
