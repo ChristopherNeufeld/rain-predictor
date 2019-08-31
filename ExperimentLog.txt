@@ -908,3 +908,901 @@ loss: 1.4563 - val_loss: 1.3304
 loss: 1.4563 - val_loss: 1.3304
 
 
+Experiment #2.  RMSProp optimizer with batch_size set to 256
+
+Git version a2bb26cf483695ccd12ae260550ef9efaec6d3d7
+
+
+RPRED:  Rain starting in 1-2 hours, warning rate= 0.958904109589041
+RPRED:  Rain starting in 3-6 hours, warning rate= 0.8943089430894309
+RPRED:  Rain stopping in next hour, warning rate= 0.5
+RPRED:  Rain stopping in 3-6 hours, warning rate= 0.0
+Total confusion= [[[381  29]
+  [ 24 213]]
+
+ [[554  14]
+  [ 18  61]]
+
+ [[358  22]
+  [ 33 234]]
+
+ [[556   7]
+  [  8  76]]
+
+ [[394  17]
+  [ 47 189]]
+
+ [[552  14]
+  [ 15  66]]
+
+ [[376  22]
+  [ 35 214]]
+
+ [[552  15]
+  [ 18  62]]
+
+ [[387  33]
+  [ 28 199]]
+
+ [[561  12]
+  [  7  67]]]
+
+
+real    44m49.638s
+user    153m7.479s
+sys     1m47.836s
+
+
+
+Loss record:
+
+loss: 0.3831 - val_loss: 0.2397
+loss: 0.2401 - val_loss: 0.2116
+loss: 0.2015 - val_loss: 0.1864
+loss: 0.1804 - val_loss: 0.1578
+loss: 0.1587 - val_loss: 0.1377
+loss: 0.1369 - val_loss: 0.1322
+loss: 0.1268 - val_loss: 0.0993
+loss: 0.1063 - val_loss: 0.1105
+loss: 0.1051 - val_loss: 0.0748
+loss: 0.0832 - val_loss: 0.0751
+loss: 0.0803 - val_loss: 0.0625
+loss: 0.0715 - val_loss: 0.0597
+loss: 0.0656 - val_loss: 0.0613
+loss: 0.0604 - val_loss: 0.0460
+loss: 0.0492 - val_loss: 0.0442
+loss: 0.0512 - val_loss: 0.0716
+loss: 0.0490 - val_loss: 0.0291
+loss: 0.0363 - val_loss: 0.0293
+loss: 0.0376 - val_loss: 0.0479
+loss: 0.0343 - val_loss: 0.0521
+loss: 0.0365 - val_loss: 0.0319
+loss: 0.0275 - val_loss: 0.0418
+loss: 0.0280 - val_loss: 0.0245
+loss: 0.0272 - val_loss: 0.0329
+loss: 0.0204 - val_loss: 0.0298
+loss: 0.0249 - val_loss: 0.0241
+loss: 0.0197 - val_loss: 0.0230
+loss: 0.0224 - val_loss: 0.0676
+loss: 0.0211 - val_loss: 0.0382
+loss: 0.0165 - val_loss: 0.0293
+loss: 0.0188 - val_loss: 0.0392
+loss: 0.0141 - val_loss: 0.0267
+loss: 0.0139 - val_loss: 0.0322
+loss: 0.0126 - val_loss: 0.0170
+loss: 0.0153 - val_loss: 0.0269
+loss: 0.0131 - val_loss: 0.0340
+loss: 0.0093 - val_loss: 0.0319
+loss: 0.0140 - val_loss: 0.0195
+loss: 0.0137 - val_loss: 0.0174
+loss: 0.0077 - val_loss: 0.0194
+loss: 0.0121 - val_loss: 0.0189
+loss: 0.0106 - val_loss: 0.0414
+loss: 0.0128 - val_loss: 0.0197
+loss: 0.0059 - val_loss: 0.0185
+loss: 0.0074 - val_loss: 0.0102
+loss: 0.0081 - val_loss: 0.0191
+loss: 0.0129 - val_loss: 0.0178
+loss: 0.0042 - val_loss: 0.0169
+loss: 0.0064 - val_loss: 0.0197
+loss: 0.0209 - val_loss: 0.0138
+loss: 0.0032 - val_loss: 0.0229
+loss: 0.0231 - val_loss: 0.0207
+loss: 0.0037 - val_loss: 0.0197
+loss: 0.0032 - val_loss: 0.0319
+loss: 0.0081 - val_loss: 0.1418
+loss: 0.0135 - val_loss: 0.0143
+loss: 0.0029 - val_loss: 0.0143
+loss: 0.0046 - val_loss: 0.0220
+loss: 0.0122 - val_loss: 0.0208
+loss: 0.0020 - val_loss: 0.0267
+loss: 0.0043 - val_loss: 0.0207
+loss: 0.0108 - val_loss: 0.0199
+loss: 0.0011 - val_loss: 0.0344
+loss: 0.0076 - val_loss: 0.0216
+loss: 0.0103 - val_loss: 0.0115
+loss: 0.0034 - val_loss: 0.0180
+loss: 0.0035 - val_loss: 0.0207
+loss: 0.0091 - val_loss: 0.0285
+loss: 0.0031 - val_loss: 0.0249
+loss: 0.0020 - val_loss: 0.0145
+loss: 0.0060 - val_loss: 0.0130
+loss: 0.0043 - val_loss: 0.0335
+loss: 0.0029 - val_loss: 0.0349
+loss: 0.0098 - val_loss: 0.0222
+loss: 0.0014 - val_loss: 0.0179
+loss: 0.0042 - val_loss: 0.0267
+loss: 0.0045 - val_loss: 0.0238
+loss: 0.0068 - val_loss: 0.0183
+loss: 0.0022 - val_loss: 0.0224
+loss: 0.0016 - val_loss: 0.0442
+loss: 0.0039 - val_loss: 0.0438
+loss: 0.0100 - val_loss: 0.0739
+loss: 0.0057 - val_loss: 0.0219
+loss: 4.2429e-04 - val_loss: 0.0201
+loss: 0.0071 - val_loss: 0.0500
+loss: 0.0028 - val_loss: 0.0172
+loss: 2.1895e-04 - val_loss: 0.0216
+loss: 0.0020 - val_loss: 0.0359
+loss: 0.0062 - val_loss: 0.0280
+loss: 0.0021 - val_loss: 0.0312
+loss: 0.0036 - val_loss: 0.0414
+loss: 0.0022 - val_loss: 0.0226
+loss: 0.0062 - val_loss: 0.0287
+loss: 0.0040 - val_loss: 0.0195
+loss: 6.5701e-04 - val_loss: 0.0236
+loss: 0.0014 - val_loss: 0.0534
+loss: 0.0059 - val_loss: 0.0224
+loss: 5.7731e-04 - val_loss: 0.0267
+loss: 0.0068 - val_loss: 0.0471
+loss: 0.0027 - val_loss: 0.0318
+loss: 0.0021 - val_loss: 0.0306
+loss: 0.0059 - val_loss: 0.0249
+loss: 9.0096e-04 - val_loss: 0.0256
+loss: 0.0058 - val_loss: 0.0272
+loss: 1.2317e-04 - val_loss: 0.0282
+loss: 2.5443e-05 - val_loss: 0.0308
+loss: 0.0100 - val_loss: 0.0222
+loss: 7.7121e-04 - val_loss: 0.0250
+loss: 6.6440e-05 - val_loss: 0.0252
+loss: 0.0025 - val_loss: 0.0577
+loss: 0.0046 - val_loss: 0.0310
+loss: 0.0018 - val_loss: 0.0326
+loss: 0.0032 - val_loss: 0.0277
+loss: 6.6708e-04 - val_loss: 0.0370
+loss: 0.0018 - val_loss: 0.0389
+loss: 0.0020 - val_loss: 0.0388
+loss: 0.0018 - val_loss: 0.0523
+loss: 0.0130 - val_loss: 0.0334
+loss: 1.2952e-04 - val_loss: 0.0336
+loss: 4.6873e-05 - val_loss: 0.0347
+loss: 0.0064 - val_loss: 0.0393
+loss: 0.0031 - val_loss: 0.0381
+loss: 0.0016 - val_loss: 0.0326
+loss: 0.0083 - val_loss: 0.0919
+loss: 0.0068 - val_loss: 0.0331
+loss: 1.2330e-04 - val_loss: 0.0336
+loss: 2.5778e-05 - val_loss: 0.0343
+loss: 5.9779e-06 - val_loss: 0.0344
+loss: 2.3500e-06 - val_loss: 0.0355
+loss: 0.0189 - val_loss: 0.0160
+loss: 6.0304e-04 - val_loss: 0.0111
+loss: 4.5255e-05 - val_loss: 0.0148
+loss: 7.3707e-06 - val_loss: 0.0156
+loss: 2.8891e-06 - val_loss: 0.0162
+loss: 0.0084 - val_loss: 0.0115
+loss: 0.0021 - val_loss: 0.0147
+loss: 7.9289e-04 - val_loss: 0.0209
+loss: 0.0019 - val_loss: 0.0250
+loss: 0.0074 - val_loss: 0.0121
+loss: 0.0022 - val_loss: 0.0160
+loss: 0.0011 - val_loss: 0.0161
+loss: 9.6204e-04 - val_loss: 0.0158
+loss: 9.5684e-04 - val_loss: 0.0153
+loss: 9.5520e-04 - val_loss: 0.0155
+loss: 9.5460e-04 - val_loss: 0.0163
+loss: 9.5437e-04 - val_loss: 0.0174
+loss: 9.5428e-04 - val_loss: 0.0185
+loss: 9.5425e-04 - val_loss: 0.0194
+loss: 9.5423e-04 - val_loss: 0.0200
+loss: 9.5422e-04 - val_loss: 0.0203
+loss: 9.5422e-04 - val_loss: 0.0208
+loss: 9.5422e-04 - val_loss: 0.0208
+loss: 9.5422e-04 - val_loss: 0.0214
+loss: 9.5421e-04 - val_loss: 0.0214
+loss: 9.5421e-04 - val_loss: 0.0217
+loss: 9.5421e-04 - val_loss: 0.0218
+loss: 9.5421e-04 - val_loss: 0.0219
+loss: 9.5421e-04 - val_loss: 0.0221
+loss: 9.5421e-04 - val_loss: 0.0221
+loss: 9.5421e-04 - val_loss: 0.0223
+loss: 9.5421e-04 - val_loss: 0.0224
+loss: 9.5421e-04 - val_loss: 0.0225
+loss: 9.5421e-04 - val_loss: 0.0225
+loss: 9.5421e-04 - val_loss: 0.0225
+loss: 9.5421e-04 - val_loss: 0.0226
+loss: 9.5421e-04 - val_loss: 0.0226
+loss: 9.5421e-04 - val_loss: 0.0226
+loss: 9.5421e-04 - val_loss: 0.0227
+loss: 9.5421e-04 - val_loss: 0.0228
+loss: 9.5421e-04 - val_loss: 0.0228
+loss: 9.5421e-04 - val_loss: 0.0228
+loss: 9.5421e-04 - val_loss: 0.0230
+loss: 9.5421e-04 - val_loss: 0.0230
+loss: 9.5421e-04 - val_loss: 0.0230
+loss: 9.5421e-04 - val_loss: 0.0230
+loss: 9.5421e-04 - val_loss: 0.0231
+loss: 9.5421e-04 - val_loss: 0.0231
+loss: 9.5421e-04 - val_loss: 0.0231
+loss: 9.5421e-04 - val_loss: 0.0231
+loss: 9.5421e-04 - val_loss: 0.0231
+loss: 9.5421e-04 - val_loss: 0.0232
+loss: 9.5421e-04 - val_loss: 0.0232
+loss: 9.5421e-04 - val_loss: 0.0232
+loss: 9.5421e-04 - val_loss: 0.0232
+loss: 9.5421e-04 - val_loss: 0.0232
+loss: 9.5421e-04 - val_loss: 0.0233
+loss: 9.5421e-04 - val_loss: 0.0233
+loss: 9.5421e-04 - val_loss: 0.0234
+loss: 9.5421e-04 - val_loss: 0.0234
+loss: 9.5421e-04 - val_loss: 0.0235
+loss: 9.5421e-04 - val_loss: 0.0235
+loss: 9.5421e-04 - val_loss: 0.0235
+loss: 9.5421e-04 - val_loss: 0.0235
+loss: 9.5421e-04 - val_loss: 0.0236
+loss: 9.5421e-04 - val_loss: 0.0236
+loss: 9.5421e-04 - val_loss: 0.0236
+loss: 9.5421e-04 - val_loss: 0.0237
+loss: 9.5421e-04 - val_loss: 0.0236
+loss: 9.5421e-04 - val_loss: 0.0237
+loss: 9.5421e-04 - val_loss: 0.0237
+loss: 9.5421e-04 - val_loss: 0.0237
+loss: 9.5421e-04 - val_loss: 0.0237
+loss: 9.5421e-04 - val_loss: 0.0237
+loss: 9.5421e-04 - val_loss: 0.0237
+loss: 9.5421e-04 - val_loss: 0.0238
+loss: 9.5421e-04 - val_loss: 0.0238
+loss: 9.5421e-04 - val_loss: 0.0239
+loss: 9.5421e-04 - val_loss: 0.0240
+loss: 9.5421e-04 - val_loss: 0.0240
+loss: 9.5421e-04 - val_loss: 0.0240
+loss: 9.5421e-04 - val_loss: 0.0240
+loss: 9.5421e-04 - val_loss: 0.0240
+loss: 9.5421e-04 - val_loss: 0.0240
+loss: 9.5421e-04 - val_loss: 0.0241
+loss: 9.5421e-04 - val_loss: 0.0240
+loss: 9.5421e-04 - val_loss: 0.0240
+loss: 9.5421e-04 - val_loss: 0.0241
+loss: 9.5421e-04 - val_loss: 0.0241
+loss: 9.5421e-04 - val_loss: 0.0241
+loss: 9.5421e-04 - val_loss: 0.0241
+loss: 9.5421e-04 - val_loss: 0.0241
+loss: 9.5421e-04 - val_loss: 0.0242
+loss: 9.5421e-04 - val_loss: 0.0243
+loss: 9.5421e-04 - val_loss: 0.0242
+loss: 9.5421e-04 - val_loss: 0.0243
+loss: 9.5421e-04 - val_loss: 0.0243
+loss: 9.5421e-04 - val_loss: 0.0243
+loss: 9.5421e-04 - val_loss: 0.0243
+loss: 9.5421e-04 - val_loss: 0.0243
+loss: 9.5421e-04 - val_loss: 0.0243
+loss: 9.5421e-04 - val_loss: 0.0243
+loss: 9.5421e-04 - val_loss: 0.0243
+loss: 9.5421e-04 - val_loss: 0.0243
+loss: 9.5421e-04 - val_loss: 0.0243
+loss: 9.5421e-04 - val_loss: 0.0243
+loss: 9.5421e-04 - val_loss: 0.0243
+loss: 9.5421e-04 - val_loss: 0.0243
+loss: 9.5421e-04 - val_loss: 0.0244
+loss: 9.5421e-04 - val_loss: 0.0244
+loss: 9.5421e-04 - val_loss: 0.0244
+loss: 9.5421e-04 - val_loss: 0.0245
+loss: 9.5421e-04 - val_loss: 0.0245
+loss: 9.5421e-04 - val_loss: 0.0245
+loss: 9.5421e-04 - val_loss: 0.0245
+loss: 9.5421e-04 - val_loss: 0.0245
+loss: 9.5421e-04 - val_loss: 0.0246
+loss: 9.5421e-04 - val_loss: 0.0245
+loss: 9.5421e-04 - val_loss: 0.0246
+loss: 9.5421e-04 - val_loss: 0.0246
+loss: 9.5421e-04 - val_loss: 0.0247
+loss: 9.5421e-04 - val_loss: 0.0247
+loss: 9.5421e-04 - val_loss: 0.0247
+loss: 9.5421e-04 - val_loss: 0.0248
+loss: 9.5421e-04 - val_loss: 0.0248
+loss: 9.5421e-04 - val_loss: 0.0248
+loss: 9.5421e-04 - val_loss: 0.0248
+loss: 9.5421e-04 - val_loss: 0.0248
+loss: 9.5421e-04 - val_loss: 0.0248
+loss: 9.5421e-04 - val_loss: 0.0248
+loss: 9.5421e-04 - val_loss: 0.0248
+loss: 9.5421e-04 - val_loss: 0.0248
+loss: 9.5421e-04 - val_loss: 0.0249
+loss: 9.5421e-04 - val_loss: 0.0249
+loss: 9.5421e-04 - val_loss: 0.0249
+loss: 9.5421e-04 - val_loss: 0.0249
+loss: 9.5421e-04 - val_loss: 0.0250
+loss: 9.5421e-04 - val_loss: 0.0249
+loss: 9.5421e-04 - val_loss: 0.0249
+loss: 9.5421e-04 - val_loss: 0.0249
+loss: 9.5421e-04 - val_loss: 0.0250
+loss: 9.5421e-04 - val_loss: 0.0249
+loss: 9.5421e-04 - val_loss: 0.0249
+loss: 9.5421e-04 - val_loss: 0.0249
+loss: 9.5421e-04 - val_loss: 0.0250
+loss: 9.5421e-04 - val_loss: 0.0250
+loss: 9.5421e-04 - val_loss: 0.0250
+loss: 9.5421e-04 - val_loss: 0.0250
+loss: 9.5421e-04 - val_loss: 0.0250
+loss: 9.5421e-04 - val_loss: 0.0250
+loss: 9.5421e-04 - val_loss: 0.0250
+loss: 9.5421e-04 - val_loss: 0.0250
+loss: 9.5421e-04 - val_loss: 0.0250
+loss: 9.5421e-04 - val_loss: 0.0250
+loss: 9.5421e-04 - val_loss: 0.0250
+loss: 9.5421e-04 - val_loss: 0.0250
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0251
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0253
+loss: 9.5421e-04 - val_loss: 0.0253
+loss: 9.5421e-04 - val_loss: 0.0253
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0253
+loss: 9.5421e-04 - val_loss: 0.0253
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0252
+loss: 9.5421e-04 - val_loss: 0.0253
+loss: 9.5421e-04 - val_loss: 0.0253
+loss: 9.5421e-04 - val_loss: 0.0253
+loss: 9.5421e-04 - val_loss: 0.0253
+loss: 9.5421e-04 - val_loss: 0.0253
+loss: 9.5421e-04 - val_loss: 0.0254
+loss: 9.5421e-04 - val_loss: 0.0254
+loss: 9.5421e-04 - val_loss: 0.0254
+loss: 9.5421e-04 - val_loss: 0.0254
+loss: 9.5421e-04 - val_loss: 0.0254
+loss: 9.5421e-04 - val_loss: 0.0254
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0254
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0255
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0257
+loss: 9.5421e-04 - val_loss: 0.0257
+loss: 9.5421e-04 - val_loss: 0.0257
+loss: 9.5421e-04 - val_loss: 0.0256
+loss: 9.5421e-04 - val_loss: 0.0257
+loss: 9.5421e-04 - val_loss: 0.0257
+loss: 9.5421e-04 - val_loss: 0.0257
+loss: 9.5421e-04 - val_loss: 0.0257
+loss: 9.5421e-04 - val_loss: 0.0257
+loss: 9.5421e-04 - val_loss: 0.0257
+loss: 9.5421e-04 - val_loss: 0.0257
+loss: 9.5421e-04 - val_loss: 0.0257
+loss: 9.5421e-04 - val_loss: 0.0257
+
+
+
+Experiment #3   RMSprop optimizer with learning rate set to 0.0001.
+	   	Default batch size.
+
+Git version c5db8897eb6aa75b82546e14cfa965a06967b02d
+
+RPRED:  Rain starting in 1-2 hours, warning rate= 0.8413793103448276
+RPRED:  Rain starting in 3-6 hours, warning rate= 0.6987951807228916
+RPRED:  Rain stopping in next hour, warning rate= 0.3157894736842105
+RPRED:  Rain stopping in 3-6 hours, warning rate= 0.0
+Total confusion= [[[364  49]
+  [ 24 210]]
+
+ [[551  12]
+  [ 19  65]]
+
+ [[353  27]
+  [ 52 215]]
+
+ [[537   7]
+  [ 35  68]]
+
+ [[386  21]
+  [ 55 185]]
+
+ [[547   4]
+  [ 24  72]]
+
+ [[395  18]
+  [ 73 161]]
+
+ [[556   6]
+  [ 31  54]]
+
+ [[386  46]
+  [ 65 150]]
+
+ [[579  20]
+  [ 20  28]]]
+
+
+real    103m15.204s
+user    350m20.016s
+sys     7m54.885s
+
+
+Loss record:
+
+loss: 0.3789 - val_loss: 0.2469
+loss: 0.2149 - val_loss: 0.2194
+loss: 0.1871 - val_loss: 0.1886
+loss: 0.1677 - val_loss: 0.1733
+loss: 0.1518 - val_loss: 0.1668
+loss: 0.1391 - val_loss: 0.1431
+loss: 0.1254 - val_loss: 0.1282
+loss: 0.1148 - val_loss: 0.1206
+loss: 0.1055 - val_loss: 0.1131
+loss: 0.0971 - val_loss: 0.0954
+loss: 0.0910 - val_loss: 0.1115
+loss: 0.0840 - val_loss: 0.0987
+loss: 0.0789 - val_loss: 0.0914
+loss: 0.0736 - val_loss: 0.0737
+loss: 0.0678 - val_loss: 0.0772
+loss: 0.0647 - val_loss: 0.0643
+loss: 0.0611 - val_loss: 0.0673
+loss: 0.0577 - val_loss: 0.0596
+loss: 0.0539 - val_loss: 0.0726
+loss: 0.0507 - val_loss: 0.0542
+loss: 0.0476 - val_loss: 0.0557
+loss: 0.0455 - val_loss: 0.0480
+loss: 0.0428 - val_loss: 0.0492
+loss: 0.0400 - val_loss: 0.0478
+loss: 0.0385 - val_loss: 0.0438
+loss: 0.0380 - val_loss: 0.0723
+loss: 0.0359 - val_loss: 0.0426
+loss: 0.0333 - val_loss: 0.0399
+loss: 0.0323 - val_loss: 0.0444
+loss: 0.0299 - val_loss: 0.0389
+loss: 0.0301 - val_loss: 0.0371
+loss: 0.0287 - val_loss: 0.0336
+loss: 0.0254 - val_loss: 0.0382
+loss: 0.0264 - val_loss: 0.0341
+loss: 0.0240 - val_loss: 0.0448
+loss: 0.0244 - val_loss: 0.0316
+loss: 0.0226 - val_loss: 0.0346
+loss: 0.0218 - val_loss: 0.0334
+loss: 0.0191 - val_loss: 0.0491
+loss: 0.0193 - val_loss: 0.0391
+loss: 0.0192 - val_loss: 0.0353
+loss: 0.0180 - val_loss: 0.0293
+loss: 0.0180 - val_loss: 0.0332
+loss: 0.0166 - val_loss: 0.0323
+loss: 0.0155 - val_loss: 0.0382
+loss: 0.0150 - val_loss: 0.1464
+loss: 0.0146 - val_loss: 0.0307
+loss: 0.0139 - val_loss: 0.0827
+loss: 0.0140 - val_loss: 0.0380
+loss: 0.0122 - val_loss: 0.0361
+loss: 0.0129 - val_loss: 0.0361
+loss: 0.0122 - val_loss: 0.0306
+loss: 0.0109 - val_loss: 0.0410
+loss: 0.0134 - val_loss: 0.0399
+loss: 0.0104 - val_loss: 0.0385
+loss: 0.0115 - val_loss: 0.0382
+loss: 0.0101 - val_loss: 0.0369
+loss: 0.0112 - val_loss: 0.0373
+loss: 0.0115 - val_loss: 0.0356
+loss: 0.0095 - val_loss: 0.0479
+loss: 0.0094 - val_loss: 0.0401
+loss: 0.0106 - val_loss: 0.0404
+loss: 0.0085 - val_loss: 0.0436
+loss: 0.0090 - val_loss: 0.0382
+loss: 0.0097 - val_loss: 0.0354
+loss: 0.0079 - val_loss: 0.0361
+loss: 0.0070 - val_loss: 0.0464
+loss: 0.0071 - val_loss: 0.0383
+loss: 0.0078 - val_loss: 0.0384
+loss: 0.0063 - val_loss: 0.0426
+loss: 0.0073 - val_loss: 0.0376
+loss: 0.0086 - val_loss: 0.0409
+loss: 0.0076 - val_loss: 0.0492
+loss: 0.0063 - val_loss: 0.0417
+loss: 0.0080 - val_loss: 0.0436
+loss: 0.0061 - val_loss: 0.0441
+loss: 0.0068 - val_loss: 0.0454
+loss: 0.0061 - val_loss: 0.0413
+loss: 0.0064 - val_loss: 0.0375
+loss: 0.0087 - val_loss: 0.0384
+loss: 0.0050 - val_loss: 0.0404
+loss: 0.0056 - val_loss: 0.0398
+loss: 0.0066 - val_loss: 0.0391
+loss: 0.0057 - val_loss: 0.0661
+loss: 0.0053 - val_loss: 0.0492
+loss: 0.0053 - val_loss: 0.1620
+loss: 0.0060 - val_loss: 0.0422
+loss: 0.0035 - val_loss: 0.0419
+loss: 0.0053 - val_loss: 0.0834
+loss: 0.0047 - val_loss: 0.0543
+loss: 0.0050 - val_loss: 0.0453
+loss: 0.0054 - val_loss: 0.0534
+loss: 0.0050 - val_loss: 0.0458
+loss: 0.0046 - val_loss: 0.0507
+loss: 0.0049 - val_loss: 0.0481
+loss: 0.0035 - val_loss: 0.0468
+loss: 0.0041 - val_loss: 0.0625
+loss: 0.0045 - val_loss: 0.0475
+loss: 0.0047 - val_loss: 0.0477
+loss: 0.0034 - val_loss: 0.0408
+loss: 0.0063 - val_loss: 0.0424
+loss: 0.0062 - val_loss: 0.0410
+loss: 0.0053 - val_loss: 0.0500
+loss: 0.0060 - val_loss: 0.0487
+loss: 0.0031 - val_loss: 0.0462
+loss: 0.0047 - val_loss: 0.0580
+loss: 0.0049 - val_loss: 0.0486
+loss: 0.0033 - val_loss: 0.0579
+loss: 0.0042 - val_loss: 0.0509
+loss: 0.0034 - val_loss: 0.0583
+loss: 0.0039 - val_loss: 0.0580
+loss: 0.0032 - val_loss: 0.0501
+loss: 0.0041 - val_loss: 0.0566
+loss: 0.0029 - val_loss: 0.0600
+loss: 0.0043 - val_loss: 0.0477
+loss: 0.0039 - val_loss: 0.0573
+loss: 0.0048 - val_loss: 0.0663
+loss: 0.0033 - val_loss: 0.0476
+loss: 0.0029 - val_loss: 0.0741
+loss: 0.0033 - val_loss: 0.0537
+loss: 0.0028 - val_loss: 0.0546
+loss: 0.0038 - val_loss: 0.0592
+loss: 0.0029 - val_loss: 0.0508
+loss: 0.0055 - val_loss: 0.0454
+loss: 0.0024 - val_loss: 0.0548
+loss: 0.0035 - val_loss: 0.0547
+loss: 0.0035 - val_loss: 0.0527
+loss: 0.0032 - val_loss: 0.0636
+loss: 0.0028 - val_loss: 0.0658
+loss: 0.0032 - val_loss: 0.0835
+loss: 0.0037 - val_loss: 0.0636
+loss: 0.0024 - val_loss: 0.0668
+loss: 0.0058 - val_loss: 0.0657
+loss: 0.0035 - val_loss: 0.0602
+loss: 0.0030 - val_loss: 0.0599
+loss: 0.0041 - val_loss: 0.0537
+loss: 0.0030 - val_loss: 0.0623
+loss: 0.0037 - val_loss: 0.0659
+loss: 0.0028 - val_loss: 0.0689
+loss: 0.0036 - val_loss: 0.0581
+loss: 0.0019 - val_loss: 0.0765
+loss: 0.0027 - val_loss: 0.1027
+loss: 0.0021 - val_loss: 0.1575
+loss: 0.0037 - val_loss: 0.0640
+loss: 0.0028 - val_loss: 0.0801
+loss: 0.0060 - val_loss: 0.0557
+loss: 0.0032 - val_loss: 0.0640
+loss: 0.0022 - val_loss: 0.0944
+loss: 0.0027 - val_loss: 0.0634
+loss: 0.0034 - val_loss: 0.0727
+loss: 0.0024 - val_loss: 0.0714
+loss: 0.0029 - val_loss: 0.0592
+loss: 0.0046 - val_loss: 0.0568
+loss: 0.0013 - val_loss: 0.0600
+loss: 0.0038 - val_loss: 0.0682
+loss: 0.0020 - val_loss: 0.0683
+loss: 0.0027 - val_loss: 0.0530
+loss: 0.0025 - val_loss: 0.0591
+loss: 0.0014 - val_loss: 0.0533
+loss: 0.0040 - val_loss: 0.0639
+loss: 0.0026 - val_loss: 0.0830
+loss: 0.0025 - val_loss: 0.0561
+loss: 0.0024 - val_loss: 0.0622
+loss: 0.0023 - val_loss: 0.0661
+loss: 0.0029 - val_loss: 0.0611
+loss: 0.0012 - val_loss: 0.0561
+loss: 0.0023 - val_loss: 0.0771
+loss: 0.0023 - val_loss: 0.0629
+loss: 0.0011 - val_loss: 0.0687
+loss: 0.0013 - val_loss: 0.0700
+loss: 0.0018 - val_loss: 0.0652
+loss: 0.0014 - val_loss: 0.0636
+loss: 0.0030 - val_loss: 0.0693
+loss: 0.0024 - val_loss: 0.0646
+loss: 0.0017 - val_loss: 0.0612
+loss: 0.0014 - val_loss: 0.0659
+loss: 0.0024 - val_loss: 0.0629
+loss: 0.0026 - val_loss: 0.0690
+loss: 5.9478e-04 - val_loss: 0.0763
+loss: 0.0022 - val_loss: 0.0599
+loss: 0.0015 - val_loss: 0.0698
+loss: 0.0016 - val_loss: 0.0635
+loss: 0.0017 - val_loss: 0.0588
+loss: 8.7759e-04 - val_loss: 0.0602
+loss: 0.0027 - val_loss: 0.0581
+loss: 8.2113e-04 - val_loss: 0.0568
+loss: 0.0026 - val_loss: 0.0595
+loss: 0.0014 - val_loss: 0.0509
+loss: 0.0035 - val_loss: 0.0626
+loss: 0.0011 - val_loss: 0.0577
+loss: 0.0039 - val_loss: 0.0603
+loss: 0.0023 - val_loss: 0.0573
+loss: 0.0038 - val_loss: 0.0665
+loss: 0.0012 - val_loss: 0.0686
+loss: 0.0025 - val_loss: 0.0597
+loss: 0.0021 - val_loss: 0.0603
+loss: 0.0016 - val_loss: 0.0680
+loss: 0.0022 - val_loss: 0.0687
+loss: 0.0025 - val_loss: 0.0700
+loss: 0.0028 - val_loss: 0.0671
+loss: 0.0021 - val_loss: 0.0649
+loss: 0.0014 - val_loss: 0.0667
+loss: 0.0021 - val_loss: 0.0733
+loss: 0.0012 - val_loss: 0.0769
+loss: 6.4472e-04 - val_loss: 0.0720
+loss: 0.0016 - val_loss: 0.0678
+loss: 0.0032 - val_loss: 0.0809
+loss: 0.0012 - val_loss: 0.0683
+loss: 0.0026 - val_loss: 0.0680
+loss: 0.0019 - val_loss: 0.0634
+loss: 0.0024 - val_loss: 0.0804
+loss: 0.0023 - val_loss: 0.0844
+loss: 0.0022 - val_loss: 0.0715
+loss: 9.5184e-04 - val_loss: 0.0719
+loss: 0.0030 - val_loss: 0.1029
+loss: 0.0019 - val_loss: 0.0672
+loss: 9.3559e-04 - val_loss: 0.0615
+loss: 0.0030 - val_loss: 0.0832
+loss: 0.0014 - val_loss: 0.0704
+loss: 0.0017 - val_loss: 0.0656
+loss: 8.6919e-04 - val_loss: 0.0666
+loss: 9.2254e-04 - val_loss: 0.0738
+loss: 0.0014 - val_loss: 0.1492
+loss: 0.0027 - val_loss: 0.0746
+loss: 8.6213e-04 - val_loss: 0.0767
+loss: 0.0030 - val_loss: 0.0789
+loss: 0.0011 - val_loss: 0.0863
+loss: 0.0023 - val_loss: 0.0706
+loss: 0.0016 - val_loss: 0.0773
+loss: 9.8703e-04 - val_loss: 0.0678
+loss: 0.0018 - val_loss: 0.0733
+loss: 0.0041 - val_loss: 0.0695
+loss: 0.0023 - val_loss: 0.0823
+loss: 0.0021 - val_loss: 0.0835
+loss: 0.0017 - val_loss: 0.0687
+loss: 0.0014 - val_loss: 0.0734
+loss: 7.5585e-04 - val_loss: 0.0737
+loss: 0.0040 - val_loss: 0.0757
+loss: 9.2046e-04 - val_loss: 0.0713
+loss: 0.0012 - val_loss: 0.0723
+loss: 0.0028 - val_loss: 0.0716
+loss: 0.0015 - val_loss: 0.0712
+loss: 6.7313e-04 - val_loss: 0.0720
+loss: 0.0012 - val_loss: 0.0701
+loss: 0.0025 - val_loss: 0.0695
+loss: 0.0010 - val_loss: 0.0781
+loss: 8.5719e-04 - val_loss: 0.0755
+loss: 0.0016 - val_loss: 0.1591
+loss: 9.4838e-04 - val_loss: 0.0768
+loss: 0.0026 - val_loss: 0.0700
+loss: 6.8173e-04 - val_loss: 0.0803
+loss: 0.0019 - val_loss: 0.0773
+loss: 0.0018 - val_loss: 0.0765
+loss: 5.3794e-04 - val_loss: 0.0717
+loss: 6.4811e-04 - val_loss: 0.0815
+loss: 0.0017 - val_loss: 0.0685
+loss: 0.0015 - val_loss: 0.0758
+loss: 0.0012 - val_loss: 0.0761
+loss: 0.0015 - val_loss: 0.0790
+loss: 0.0018 - val_loss: 0.0705
+loss: 0.0013 - val_loss: 0.0714
+loss: 0.0017 - val_loss: 0.0845
+loss: 7.5542e-04 - val_loss: 0.0777
+loss: 0.0036 - val_loss: 0.0751
+loss: 0.0011 - val_loss: 0.0991
+loss: 0.0013 - val_loss: 0.0716
+loss: 0.0024 - val_loss: 0.0723
+loss: 7.6699e-04 - val_loss: 0.0886
+loss: 5.3006e-04 - val_loss: 0.0806
+loss: 9.7422e-04 - val_loss: 0.0774
+loss: 2.1817e-04 - val_loss: 0.0904
+loss: 0.0017 - val_loss: 0.0935
+loss: 0.0025 - val_loss: 0.0756
+loss: 3.5646e-04 - val_loss: 0.0728
+loss: 0.0022 - val_loss: 0.0651
+loss: 0.0020 - val_loss: 0.0756
+loss: 0.0017 - val_loss: 0.0698
+loss: 0.0011 - val_loss: 0.0712
+loss: 6.1138e-04 - val_loss: 0.0981
+loss: 0.0025 - val_loss: 0.0798
+loss: 0.0021 - val_loss: 0.0659
+loss: 0.0011 - val_loss: 0.0655
+loss: 0.0031 - val_loss: 0.0707
+loss: 0.0014 - val_loss: 0.0693
+loss: 0.0012 - val_loss: 0.0735
+loss: 0.0014 - val_loss: 0.0700
+loss: 4.6869e-04 - val_loss: 0.0698
+loss: 7.9561e-04 - val_loss: 0.1060
+loss: 3.9300e-04 - val_loss: 0.0780
+loss: 0.0012 - val_loss: 0.0830
+loss: 9.6638e-04 - val_loss: 0.0771
+loss: 0.0016 - val_loss: 0.0819
+loss: 0.0017 - val_loss: 0.0716
+loss: 3.1868e-04 - val_loss: 0.0752
+loss: 0.0025 - val_loss: 0.0700
+loss: 0.0022 - val_loss: 0.0760
+loss: 0.0023 - val_loss: 0.0772
+loss: 0.0017 - val_loss: 0.0739
+loss: 0.0029 - val_loss: 0.0744
+loss: 8.6823e-04 - val_loss: 0.0799
+loss: 0.0011 - val_loss: 0.0728
+loss: 0.0036 - val_loss: 0.0707
+loss: 7.7893e-04 - val_loss: 0.0708
+loss: 0.0018 - val_loss: 0.0787
+loss: 0.0016 - val_loss: 0.0738
+loss: 0.0019 - val_loss: 0.0820
+loss: 0.0020 - val_loss: 0.0980
+loss: 0.0015 - val_loss: 0.0679
+loss: 0.0017 - val_loss: 0.0817
+loss: 0.0014 - val_loss: 0.0808
+loss: 3.9845e-04 - val_loss: 0.0822
+loss: 0.0034 - val_loss: 0.0860
+loss: 0.0019 - val_loss: 0.0948
+loss: 0.0017 - val_loss: 0.0840
+loss: 5.3861e-04 - val_loss: 0.0928
+loss: 0.0011 - val_loss: 0.0808
+loss: 0.0014 - val_loss: 0.0690
+loss: 0.0017 - val_loss: 0.0729
+loss: 0.0013 - val_loss: 0.0763
+loss: 0.0037 - val_loss: 0.0689
+loss: 4.3356e-04 - val_loss: 0.0787
+loss: 0.0024 - val_loss: 0.0732
+loss: 0.0026 - val_loss: 0.0742
+loss: 0.0020 - val_loss: 0.0809
+loss: 1.0566e-04 - val_loss: 0.0782
+loss: 0.0023 - val_loss: 0.0812
+loss: 0.0014 - val_loss: 0.0769
+loss: 0.0014 - val_loss: 0.0899
+loss: 0.0014 - val_loss: 0.0782
+loss: 5.5599e-05 - val_loss: 0.0830
+loss: 0.0015 - val_loss: 0.0913
+loss: 0.0017 - val_loss: 0.0750
+loss: 0.0024 - val_loss: 0.0724
+loss: 0.0016 - val_loss: 0.0797
+loss: 0.0016 - val_loss: 0.0883
+loss: 0.0012 - val_loss: 0.0884
+loss: 0.0010 - val_loss: 0.0788
+loss: 4.4325e-04 - val_loss: 0.0845
+loss: 0.0012 - val_loss: 0.0759
+loss: 9.3462e-04 - val_loss: 0.0815
+loss: 0.0011 - val_loss: 0.0868
+loss: 0.0018 - val_loss: 0.0789
+loss: 5.9200e-04 - val_loss: 0.0864
+loss: 0.0015 - val_loss: 0.0738
+loss: 7.5110e-04 - val_loss: 0.0911
+loss: 0.0028 - val_loss: 0.0768
+loss: 0.0015 - val_loss: 0.0782
+loss: 0.0014 - val_loss: 0.0777
+loss: 9.8591e-04 - val_loss: 0.0830
+loss: 0.0025 - val_loss: 0.0774
+loss: 0.0023 - val_loss: 0.0749
+loss: 0.0041 - val_loss: 0.0682
+loss: 0.0028 - val_loss: 0.0726
+loss: 6.1058e-04 - val_loss: 0.0734
+loss: 7.0037e-04 - val_loss: 0.0730
+loss: 0.0011 - val_loss: 0.0861
+loss: 7.5291e-04 - val_loss: 0.0824
+loss: 7.1158e-04 - val_loss: 0.0812
+loss: 9.0200e-05 - val_loss: 0.0793
+loss: 8.4784e-04 - val_loss: 0.0810
+loss: 0.0013 - val_loss: 0.0768
+loss: 0.0015 - val_loss: 0.0836
+loss: 0.0021 - val_loss: 0.0807
+loss: 0.0016 - val_loss: 0.0879
+loss: 0.0028 - val_loss: 0.0780
+loss: 4.0289e-04 - val_loss: 0.0849
+loss: 7.6952e-04 - val_loss: 0.0869
+loss: 6.0390e-04 - val_loss: 0.0810
+loss: 0.0016 - val_loss: 0.0796
+loss: 0.0012 - val_loss: 0.0736
+loss: 9.6858e-04 - val_loss: 0.0750
+loss: 0.0029 - val_loss: 0.0818
+loss: 8.1879e-04 - val_loss: 0.0806
+loss: 0.0013 - val_loss: 0.0855
+loss: 9.8327e-04 - val_loss: 0.0801
+loss: 0.0010 - val_loss: 0.0829
+loss: 0.0027 - val_loss: 0.0771
+loss: 0.0026 - val_loss: 0.0769
+loss: 0.0016 - val_loss: 0.0641
+loss: 0.0013 - val_loss: 0.0743
+loss: 0.0024 - val_loss: 0.0846
+loss: 0.0010 - val_loss: 0.0758
+loss: 0.0018 - val_loss: 0.0714
+loss: 0.0016 - val_loss: 0.0701
+loss: 0.0018 - val_loss: 0.0692
+loss: 8.3736e-04 - val_loss: 0.0824
+loss: 0.0015 - val_loss: 0.0760
+loss: 0.0027 - val_loss: 0.0843
+loss: 6.9021e-04 - val_loss: 0.0739
+loss: 2.3133e-04 - val_loss: 0.0816
+loss: 0.0021 - val_loss: 0.0792
+loss: 3.9618e-04 - val_loss: 0.0875
+loss: 0.0012 - val_loss: 0.0794
+loss: 2.8898e-04 - val_loss: 0.0948
+loss: 1.3702e-04 - val_loss: 0.0877
+loss: 3.6664e-04 - val_loss: 0.0784
+loss: 0.0024 - val_loss: 0.0742
+loss: 7.2962e-04 - val_loss: 0.0711
+loss: 0.0016 - val_loss: 0.0776
+loss: 0.0011 - val_loss: 0.0810
