@@ -171,7 +171,8 @@ else:
 
     mymodel = Model(inputs=[inputs1], outputs=[output_layer])
 
-    mymodel.compile(loss='binary_crossentropy', optimizer='rmsprop')
+    mymodel.compile(loss='binary_crossentropy',
+                    optimizer=keras.optimizers.RMSprop(lr=0.0001))
 
 
 if args.nEpochs > 0:
@@ -183,7 +184,6 @@ if args.nEpochs > 0:
                                           mode='auto', period=1)
 
     mymodel.fit(x = xvals, y = yvals, epochs = args.nEpochs, verbose=1,
-                batch_size = 256,
                 validation_split = args.vFrac, shuffle = True,
                 callbacks = [ cb1 ])
 
