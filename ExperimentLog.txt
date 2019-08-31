@@ -2255,3 +2255,46 @@ loss: 4.6719e-07 - val_loss: 0.0254
 loss: 4.6512e-07 - val_loss: 0.0254
 loss: 4.6368e-07 - val_loss: 0.0254
 loss: 4.6146e-07 - val_loss: 0.0255
+
+
+
+Expriment #5.  Adagrad optimizer
+
+Git version:  d69b348184ced8f6bf2a9d1b6f3a4800cf22ce4e
+
+No time value, interrupted when overtraining
+
+RPRED:  Rain starting in 1-2 hours, warning rate= 0.9090909090909091
+RPRED:  Rain starting in 3-6 hours, warning rate= 0.8073770491803278
+RPRED:  Rain stopping in next hour, warning rate= 0.7777777777777778
+RPRED:  Rain stopping in 3-6 hours, warning rate= 0.0
+Total confusion= [[[363  44]
+  [ 19 221]]
+
+ [[552  10]
+  [  6  79]]
+
+ [[334  32]
+  [ 48 233]]
+
+ [[536   5]
+  [ 23  83]]
+
+ [[374  27]
+  [ 50 196]]
+
+ [[558  12]
+  [ 16  61]]
+
+ [[374  29]
+  [ 58 186]]
+
+ [[548   9]
+  [ 17  73]]
+
+ [[381  37]
+  [ 41 188]]
+
+ [[568  14]
+  [ 26  39]]]
+
