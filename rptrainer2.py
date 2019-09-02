@@ -71,14 +71,10 @@ def getDataVectors(sequence_file, path_file):
         newoffset = random.randint(i, len(seqlist) - 1)
         if newoffset == i:
             continue
-        
-        tmp = rvalX[i]
-        rvalX[i] = rvalX[newoffset]
-        rvalX[newoffset] = tmp
 
-        tmp = rvalY[i]
-        rvalY[i] = rvalY[newoffset]
-        rvalY[newoffset] = tmp
+        rvalX[[i, newoffset]] = rvalX[[newoffset, i]]
+        rvalY[[i, newoffset]] = rvalY[[newoffset, i]]
+
 
     return rvalX, rvalY, datasize, len(seqlist), hashval
 
