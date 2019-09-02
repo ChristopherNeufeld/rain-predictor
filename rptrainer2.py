@@ -122,6 +122,9 @@ parser.add_argument('--holdout1', type=str, dest='holdout1',
 parser.add_argument('--epochs', type=int, dest='nEpochs',
                     default = 100,
                     help = 'Set the number of epochs to train.')
+parser.add_argument('--tensorboard', type=bool, dest='tensorboard',
+                    default = False,
+                    help = 'Whether to produce tensorboard outputs.')
 parser.add_argument('--ignore-hash', type=bool, dest='nohash',
                     default = False,
                     help = 'Ignore unexpected hash values in '
@@ -190,10 +193,14 @@ if args.nEpochs > 0:
                                       histogram_freq=1,
                                       write_images=True)
 
+    calllist = [ cb1 ]
+    if args.tensorboard:
+        calllist.append(cb2)
+
     history = mymodel.fit(x = xvals, y = yvals, epochs = args.nEpochs,
                           verbose=1, batch_size = 512,
                           validation_split = args.vFrac,
-                          shuffle = True, callbacks = [ cb1, cb2 ])
+                          shuffle = True, callbacks = calllist)
 
 
     histdir = "histories/" + args.name
