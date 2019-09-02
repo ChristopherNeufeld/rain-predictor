@@ -251,7 +251,7 @@ hjunk2 = None
 if args.holdout0 or args.holdout1:
 
     if args.savefile:
-        mymodel = keras.models.load_model(args.savefile)
+        mymodel = keras.models.load_model('cb' + args.savefile)
     
     confusion = np.zeros((10, 2, 2), dtype=np.int64)
 
