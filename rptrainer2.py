@@ -6,6 +6,7 @@ import rpreddtypes
 import argparse
 import random
 import hashlib
+import os
 
 import tensorflow as tf
 # from tensorflow.keras.callbacks import TensorBoard, EarlyStopping
@@ -131,6 +132,11 @@ parser.add_argument('--ignore-hash', type=bool, dest='nohash',
                     'the input data.  Hash verification is used '
                     'to ensure that comparison runs all are '
                     'exposed to the same dataset.')
+parser.add_argument('--name', type=str, dest='name',
+                    required=True,
+                    help='A name to distinguish this run.  It '
+                    'will be used to construct filenames for '
+                    'detailed logging.')
 
 args = parser.parse_args()
 
@@ -162,17 +168,19 @@ if args.Continue:
 else:
 
     inputs1 = Input(batch_shape = (None, 6, datasize))
+
     
     time_layer = LSTM(lstm_module_nodes, stateful = False,
                       activation='relu')(inputs1)
 
     synth_layer = Dense(synth_layer_nodes, activation='relu')(time_layer)
+
     output_layer = Dense(num_outputs, activation='sigmoid')(synth_layer)
 
     mymodel = Model(inputs=[inputs1], outputs=[output_layer])
 
     mymodel.compile(loss='binary_crossentropy',
-                    optimizer=keras.optimizers.Nadam())
+                    optimizer=keras.optimizers.RMSprop())
 
 
 if args.nEpochs > 0:
@@ -182,12 +190,27 @@ if args.nEpochs > 0:
                                           save_best_only = True,
                                           verbose=1,
                                           mode='auto', period=1)
+    cb2 = keras.callbacks.TensorBoard(log_dir="logs/" + args.name,
+                                      histogram_freq=1,
+                                      write_images=True)
 
-    mymodel.fit(x = xvals, y = yvals, epochs = args.nEpochs, verbose=1,
-                validation_split = args.vFrac, shuffle = True,
-                callbacks = [ cb1 ])
+    history = mymodel.fit(x = xvals, y = yvals, epochs = args.nEpochs,
+                          verbose=1, batch_size = 512,
+                          validation_split = args.vFrac,
+                          shuffle = True, callbacks = [ cb1, cb2 ])
 
 
+    histdir = "histories/" + args.name
+    if not os.path.exists(histdir):
+        os.makedirs(histdir)
+
+    for key in history.history.keys():
+        filename = histdir + '/' + key
+        with open(filename, 'w') as ofile:
+            ofile.write('\n'.join(str(val) for val in history.history[key]))
+    
+
+    
 # My confusion matrix is  TP:  0,0
 #                         FP:  0,1
 #                         FN:  1,0
@@ -238,8 +261,9 @@ if args.holdout0 or args.holdout1:
                     else:
                         confusion[bitnum, 1, 0] += 1    # False negative
 
-        print('RPRED:  Rain starting in 1-2 hours, warning rate= {}'
-              .format(predWillRainIn1or2 / willRainIn2))
+        print('RPRED:  Rain starting in 1-2 hours, warning rate= {0} / {1}: {2}'
+              .format(predWillRainIn1or2, willRainIn2,
+                      predWillRainIn1or2 / willRainIn2))
         print('RPRED:  Rain starting in 3-6 hours, warning rate= {}'
               .format(predWillRainIn3plus / willRainIn3plus))
         
@@ -288,9 +312,3 @@ if args.holdout0 or args.holdout1:
             
 
     print('Total confusion= {0}'.format(confusion))
-
-
-
-if args.savefile and args.nEpochs > 0:
-    print('Saving model\n')
-    mymodel.save(args.savefile)
