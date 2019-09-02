@@ -3,7 +3,42 @@ Running over 200 epochs unless othewise indicated
 
 Base setup.  First run.   SGD optimizer
 
-Git version  (git rev-parse HEAD):
+Git version  (git rev-parse HEAD):    d098b5b74d9ac7bb3beb40b1be2535332f914892
+
+RPRED:  Rain starting in 1-2 hours, warning rate= 0 / 137: 0.0
+RPRED:  Rain starting in 3-6 hours, warning rate= 0.0
+RPRED:  Rain stopping in next hour, warning rate= 0.0
+RPRED:  Rain stopping in 3-6 hours, warning rate= 0.0
+Total confusion= [[[402   0]
+  [240   5]]
+
+ [[558   0]
+  [ 89   0]]
+
+ [[368   0]
+  [279   0]]
+
+ [[548   0]
+  [ 99   0]]
+
+ [[401   0]
+  [246   0]]
+
+ [[558   0]
+  [ 89   0]]
+
+ [[379   0]
+  [268   0]]
+
+ [[556   0]
+  [ 91   0]]
+
+ [[395   0]
+  [252   0]]
+
+ [[570   0]
+  [ 77   0]]]
+
 
 
 
@@ -11,7 +46,6 @@ Git version  (git rev-parse HEAD):
 Experiment #1:  RMSProp optimizer
 
 Git version
-25c25fb7c1f57e711c232265bdc6932a79e460e6
 
 RPRED:  Rain starting in 1-2 hours, warning rate= 112 / 137: 0.8175182481751825
 RPRED:  Rain starting in 3-6 hours, warning rate= 0.842741935483871
@@ -50,26 +84,204 @@ Total confusion= [[[376  26]
 
 
 
-Experiment #4:  Adagrad optimizer
+Experiment #2:  Adagrad optimizer
 
 Git version
 
+RPRED:  Rain starting in 1-2 hours, warning rate= 108 / 137: 0.7883211678832117
+RPRED:  Rain starting in 3-6 hours, warning rate= 0.842741935483871
+RPRED:  Rain stopping in next hour, warning rate= 0.7647058823529411
+RPRED:  Rain stopping in 3-6 hours, warning rate= 0.0
+Total confusion= [[[375  27]
+  [ 26 219]]
 
-Expriment #5.  Adadelta optimizer
+ [[548  10]
+  [ 17  72]]
+
+ [[353  15]
+  [ 56 223]]
+
+ [[539   9]
+  [ 16  83]]
+
+ [[378  23]
+  [ 28 218]]
+
+ [[546  12]
+  [ 12  77]]
+
+ [[362  17]
+  [ 51 217]]
+
+ [[550   6]
+  [ 19  72]]
+
+ [[364  31]
+  [ 35 217]]
+
+ [[554  16]
+  [ 13  64]]]
+
+
+
+
+Expriment #3.  Adadelta optimizer
 
 Git version: 
 
+RPRED:  Rain starting in 1-2 hours, warning rate= 105 / 137: 0.7664233576642335
+RPRED:  Rain starting in 3-6 hours, warning rate= 0.7620967741935484
+RPRED:  Rain stopping in next hour, warning rate= 0.7647058823529411
+RPRED:  Rain stopping in 3-6 hours, warning rate= 0.0
+Total confusion= [[[357  45]
+  [ 23 222]]
 
-Experiment #6:  Adam optimizer
+ [[544  14]
+  [ 15  74]]
+
+ [[352  16]
+  [ 64 215]]
+
+ [[538  10]
+  [ 22  77]]
+
+ [[368  33]
+  [ 41 205]]
+
+ [[549   9]
+  [ 23  66]]
+
+ [[355  24]
+  [ 64 204]]
+
+ [[550   6]
+  [ 29  62]]
+
+ [[355  40]
+  [ 41 211]]
+
+ [[558  12]
+  [ 15  62]]]
+
+
+
+
+Experiment #4:  Adam optimizer
 
 Git version 
 
+RPRED:  Rain starting in 1-2 hours, warning rate= 105 / 137: 0.7664233576642335
+RPRED:  Rain starting in 3-6 hours, warning rate= 0.8508064516129032
+RPRED:  Rain stopping in next hour, warning rate= 0.8235294117647058
+RPRED:  Rain stopping in 3-6 hours, warning rate= 0.0
+Total confusion= [[[367  35]
+  [ 35 210]]
 
-Experiment #7.  Adamax optimizer
+ [[541  17]
+  [ 15  74]]
+
+ [[351  17]
+  [ 51 228]]
+
+ [[539   9]
+  [ 17  82]]
+
+ [[365  36]
+  [ 27 219]]
+
+ [[548  10]
+  [ 12  77]]
+
+ [[345  34]
+  [ 31 237]]
+
+ [[550   6]
+  [ 19  72]]
+
+ [[361  34]
+  [ 34 218]]
+
+ [[556  14]
+  [ 11  66]]]
+
+
+
+Experiment #5.  Adamax optimizer
 
 Git version  
 
 
-Experiment #8.  Nadam optimizer
+RPRED:  Rain starting in 1-2 hours, warning rate= 111 / 137: 0.8102189781021898
+RPRED:  Rain starting in 3-6 hours, warning rate= 0.7459677419354839
+RPRED:  Rain stopping in next hour, warning rate= 0.7647058823529411
+RPRED:  Rain stopping in 3-6 hours, warning rate= 0.0
+Total confusion= [[[359  43]
+  [ 23 222]]
+
+ [[542  16]
+  [ 13  76]]
+
+ [[348  20]
+  [ 40 239]]
+
+ [[539   9]
+  [ 20  79]]
+
+ [[353  48]
+  [ 32 214]]
+
+ [[546  12]
+  [ 14  75]]
+
+ [[351  28]
+  [ 64 204]]
+
+ [[550   6]
+  [ 27  64]]
+
+ [[372  23]
+  [ 56 196]]
+
+ [[557  13]
+  [ 19  58]]]
+
+
+
+Experiment #6.  Nadam optimizer
 
 Git version 
+
+
+RPRED:  Rain starting in 1-2 hours, warning rate= 110 / 137: 0.8029197080291971
+RPRED:  Rain starting in 3-6 hours, warning rate= 0.7379032258064516
+RPRED:  Rain stopping in next hour, warning rate= 0.7058823529411765
+RPRED:  Rain stopping in 3-6 hours, warning rate= 0.0
+Total confusion= [[[365  37]
+  [ 42 203]]
+
+ [[541  17]
+  [ 14  75]]
+
+ [[348  20]
+  [ 61 218]]
+
+ [[541   7]
+  [ 24  75]]
+
+ [[375  26]
+  [ 30 216]]
+
+ [[544  14]
+  [ 14  75]]
+
+ [[349  30]
+  [ 45 223]]
+
+ [[551   5]
+  [ 18  73]]
+
+ [[370  25]
+  [ 67 185]]
+
+ [[560  10]
+  [ 15  62]]]
