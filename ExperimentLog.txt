@@ -2258,7 +2258,7 @@ loss: 4.6146e-07 - val_loss: 0.0255
 
 
 
-Expriment #5.  Adagrad optimizer
+Expriment #5.  Adadelta optimizer
 
 Git version:  d69b348184ced8f6bf2a9d1b6f3a4800cf22ce4e
 
