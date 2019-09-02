@@ -131,6 +131,12 @@ parser.add_argument('--ignore-hash', type=bool, dest='nohash',
                     'the input data.  Hash verification is used '
                     'to ensure that comparison runs all are '
                     'exposed to the same dataset.')
+parser.add_argument('--set-optimizer', type=int, dest='optimizer',
+                    default=-1,
+                    help='Override the optimizer in the code.\n  '
+                    '0 - SVD\n  1 - RMSprop\n  2 - Adagrad\n  '
+                    '3 - Adadelta\n  4 - Adam\n  5 - Adamax\n  '
+                    '6 - Nadam')
 parser.add_argument('--name', type=str, dest='name',
                     required=True,
                     help='A name to distinguish this run.  It '
@@ -154,6 +160,23 @@ if args.nEpochs > 0:
             print('Unexpected hash value {0}.  Input data may have changed.'
                   .format(hashval))
             sys.exit(1)
+
+useoptimizer = keras.optimizers.RMSprop()
+if args.optimizer == 0:
+    useoptimizer = keras.optimizers.SGD()
+elif args.optimizer == 1:
+    useoptimizer = keras.optimizers.RMSprop()
+elif args.optimizer == 2:
+    useoptimizer = keras.optimizers.Adagrad()
+elif args.optimizer == 3:
+    useoptimizer = keras.optimizers.Adadelta()
+elif args.optimizer == 4:
+    useoptimizer = keras.optimizers.Adam()
+elif args.optimizer == 5:
+    useoptimizer = keras.optimizers.Adamax()
+elif args.optimizer == 6:
+    useoptimizer = keras.optimizers.Nadam()
+
     
 
 if args.Continue:
@@ -226,6 +249,10 @@ hnpts = None
 hjunk2 = None
 
 if args.holdout0 or args.holdout1:
+
+    if args.savefile:
+        mymodel = keras.models.load_model(args.savefile)
+    
     confusion = np.zeros((10, 2, 2), dtype=np.int64)
 
     if args.holdout0:
