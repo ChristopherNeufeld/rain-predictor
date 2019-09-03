@@ -56,6 +56,7 @@ import math
 
 phantomRainRadius = 20
 phantomRainFrac = 0.5
+phantomHighPixelMax = 4
 epoch = datetime.datetime(year=2015, month = 1, day = 1,
                           hour = 0, minute = 0)
 
@@ -182,6 +183,7 @@ def rainPresent(binReader, centre, sensitivePixels, heavyVal):
 
     nPixels = 0
     nSetPixels = 0
+    highPixels = 0
     for probeRow in range(-phantomRainRadius, phantomRainRadius):
         deltaCol = int(math.sqrt(phantomRainRadius ** 2 - probeRow ** 2))
         for probeCol in range(-deltaCol, deltaCol):
@@ -194,8 +196,12 @@ def rainPresent(binReader, centre, sensitivePixels, heavyVal):
             nPixels += 1
             pixelVal = data[probePt[0]][probePt[1]]
 
-            # If we've got a pixel larger than 1, no phantom rain
+            # If we've got several pixels larger than 1, no phantom
+            # rain
             if pixelVal > 1:
+                highPixels += 1
+
+            if highPixels > phantomHighPixelMax:
                 return [anyRain, heavyRain]
 
             if pixelVal == 1:
