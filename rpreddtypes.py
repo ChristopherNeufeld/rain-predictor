@@ -4,6 +4,7 @@ import numpy as np
 import gzip
 import hashlib
 import abc
+import random
 
 
 # First, classes to manipulate the intermediate binary file.
@@ -461,6 +462,70 @@ def normalize(val, heavy, num_intensities, intensity_gap):
         return val / nDivs
     else:
         return (intensity_gap + val) / nDivs
+
+
+def getDataVectors(sequence_file, path_file, doShuffle = True):
+    pathmap = {}
+    seqmap = {}
+    seqlist = []
+    with open(path_file, 'r') as ifile:
+        for record in ifile:
+            fields = record.split()
+            seqno = int(fields[0])
+            pathmap[seqno] = fields[1]
+
+    with open(sequence_file, 'r') as ifile:
+        for record in ifile:
+            fields = record.split()
+            seqno = int(fields[0])
+            seqmap[seqno] = list(map(int, fields[5:]))
+            seqlist.append(seqno)
+
+    # Need to load the size of the data samples by loading one data
+    # file up front
+    probeseqno = seqlist[0]
+    probefilename = pathmap[seqno]
+    reader = RpBinReader()
+    reader.read(probefilename)
+    rpbo = reader.getPreparedDataObject()
+    datasize = rpbo.getDataLength()
+
+    rvalX = np.empty([len(seqlist), 6, datasize])
+    rvalY = np.empty([len(seqlist), 10])
+
+    for index in range(len(seqlist)):
+        base_seqno = seqlist[index]
+        for timestep in range(6):
+            ts_seqno = base_seqno + timestep
+            ts_filename = pathmap[ts_seqno]
+            reader = RpBinReader()
+            reader.read(ts_filename)
+            rpbo = reader.getPreparedDataObject()
+            rvalX[index][timestep] = np.asarray(rpbo.getPreparedData()) / 255
+
+        rvalY[index] = np.asarray(seqmap[base_seqno])
+
+    hasher = hashlib.sha256()
+    hasher.update(rvalX.data.tobytes())
+    hasher.update(rvalY.data.tobytes())
+    hashval = (hasher.hexdigest())[-16:]
+
+    # Shuffle the vectors
+    if doShuffle:
+        for i in range(len(seqlist)):
+            newoffset = random.randint(i, len(seqlist) - 1)
+            if newoffset == i:
+                continue
+
+            rvalX[[i, newoffset]] = rvalX[[newoffset, i]]
+            rvalY[[i, newoffset]] = rvalY[[newoffset, i]]
+
+
+    return rvalX, rvalY, datasize, len(seqlist), hashval
+
+
+
+
 
 
 def unittest(scratchfilename):

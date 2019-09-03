@@ -20,64 +20,6 @@ import numpy as np
 
 
 
-def getDataVectors(sequence_file, path_file):
-    pathmap = {}
-    seqmap = {}
-    seqlist = []
-    with open(path_file, 'r') as ifile:
-        for record in ifile:
-            fields = record.split()
-            seqno = int(fields[0])
-            pathmap[seqno] = fields[1]
-
-    with open(sequence_file, 'r') as ifile:
-        for record in ifile:
-            fields = record.split()
-            seqno = int(fields[0])
-            seqmap[seqno] = list(map(int, fields[5:]))
-            seqlist.append(seqno)
-
-    # Need to load the size of the data samples by loading one data
-    # file up front
-    probeseqno = seqlist[0]
-    probefilename = pathmap[seqno]
-    reader = rpreddtypes.RpBinReader()
-    reader.read(probefilename)
-    rpbo = reader.getPreparedDataObject()
-    datasize = rpbo.getDataLength()
-
-    rvalX = np.empty([len(seqlist), 6, datasize])
-    rvalY = np.empty([len(seqlist), 10])
-
-    for index in range(len(seqlist)):
-        base_seqno = seqlist[index]
-        for timestep in range(6):
-            ts_seqno = base_seqno + timestep
-            ts_filename = pathmap[ts_seqno]
-            reader = rpreddtypes.RpBinReader()
-            reader.read(ts_filename)
-            rpbo = reader.getPreparedDataObject()
-            rvalX[index][timestep] = np.asarray(rpbo.getPreparedData()) / 255
-
-        rvalY[index] = np.asarray(seqmap[base_seqno])
-
-    hasher = hashlib.sha256()
-    hasher.update(rvalX.data.tobytes())
-    hasher.update(rvalY.data.tobytes())
-    hashval = (hasher.hexdigest())[-16:]
-
-    # Shuffle the vectors
-    for i in range(len(seqlist)):
-        newoffset = random.randint(i, len(seqlist) - 1)
-        if newoffset == i:
-            continue
-
-        rvalX[[i, newoffset]] = rvalX[[newoffset, i]]
-        rvalY[[i, newoffset]] = rvalY[[newoffset, i]]
-
-
-    return rvalX, rvalY, datasize, len(seqlist), hashval
-
 
 
 ### Main code entry point here
@@ -153,10 +95,10 @@ npts = None
 hashval = None
 
 if args.nEpochs > 0:
-    xvals, yvals, datasize, npts, hashval = getDataVectors(args.trainingset, args.pathfile)
+    xvals, yvals, datasize, npts, hashval = rpreddtypes.getDataVectors(args.trainingset, args.pathfile)
 
     if not args.nohash:
-        if hashval != '048073a92f6dd2bb':
+        if hashval != 'd1bef849006cf57a':
             print('Unexpected hash value {0}.  Input data may have changed.'
                   .format(hashval))
             sys.exit(1)
@@ -259,7 +201,7 @@ if args.holdout0 or args.holdout1:
         # This is the branch when it is not currently raining, but it
         # will rain soon.
 
-        hxvals, hyvals, hjunk1, hnpts, hjunk2 = getDataVectors(args.holdout0, args.pathfile)
+        hxvals, hyvals, hjunk1, hnpts, hjunk2 = rpreddtypes.getDataVectors(args.holdout0, args.pathfile, doShuffle = False)
 
         willRainIn2 = 0
         predWillRainIn1or2 = 0
@@ -273,6 +215,8 @@ if args.holdout0 or args.holdout1:
                 willRainIn2 += 1
                 if hypred[datapt, 0] >= 0.5 or hypred[datapt, 2] >= 0.5:
                     predWillRainIn1or2 += 1
+                else:
+                    print('Failed prediction datapt= {0}'.format(datapt))
 
             if hyvals[datapt, 0] == 0 and hyvals[datapt, 2] == 0:
                 willRainIn3plus += 1
@@ -299,7 +243,7 @@ if args.holdout0 or args.holdout1:
         
         
     if args.holdout1:
-        hxvals, hyvals, hjunk1, hnpts, hjunk2 = getDataVectors(args.holdout1, args.pathfile)
+        hxvals, hyvals, hjunk1, hnpts, hjunk2 = rpreddtypes.getDataVectors(args.holdout1, args.pathfile, doShuffle = False)
 
         willStopIn1 = 0
         predWillStopIn1 = 0
