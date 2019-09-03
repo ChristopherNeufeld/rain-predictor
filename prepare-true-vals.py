@@ -55,8 +55,8 @@ import math
 
 
 phantomRainRadius = 20
-phantomRainFrac = 0.5
-phantomHighPixelMax = 4
+phantomRainFrac = 0.6
+phantomHighPixelMax = 10
 epoch = datetime.datetime(year=2015, month = 1, day = 1,
                           hour = 0, minute = 0)
 
@@ -140,7 +140,7 @@ def computeSequenceNumber(filename):
     return int(delta.total_seconds() / 600)
 
 
-def rainPresent(binReader, centre, sensitivePixels, heavyVal):
+def rainPresent(binReader, centre, sensitivePixels, heavyVal, seqno):
     """
     Returns a list of 2 integer elements.  The first indicates any
     rain at all in any of the sensitive pixels.  The second indicates
@@ -247,15 +247,17 @@ hashString = rpreddtypes.genhash(args.centre, args.sensitive, args.heavy)
 for inputfile in args.ifilenames:
     rpReader = rpreddtypes.RpBinReader()
     rpReader.read(inputfile)
+    seqno = computeSequenceNumber(inputfile)
 
-    record = '{0} {1} {2} {3}'.format(computeSequenceNumber(inputfile),
+    record = '{0} {1} {2} {3}'.format(seqno,
                                       os.path.abspath(inputfile),
                                       rpreddtypes.genhash(args.centre,
                                                           args.sensitive,
                                                           args.heavy),
                                       args.rotations)
 
-    truevals = rainPresent(rpReader, args.centre, args.sensitive, args.heavy)
+    truevals = rainPresent(rpReader, args.centre, args.sensitive, args.heavy,
+                           seqno)
     record = '{0} {1} {2}'.format(record, truevals[0], truevals[1])
 
     for rot in range(args.rotations):
