@@ -294,7 +294,8 @@ Total confusion= [[[365  37]
 Tweaking Expt #1
 
 Tweaking the network.  predictor.py creates a custom error measure, a
-weighted sum of departures for those entries that failed.
+weighted sum of departures for those entries that failed.  Using 40
+histogramming bins.
 
 First version.  39a6ab2d40f8c1ef21c1ca5e8f0d3dd44102bd93
 All layers relu.  Node counts 500,300,10
@@ -320,6 +321,24 @@ No regularization
 
 Version 597bbb39f47510c91b3decf6c8634707167452e2
 
-Custom Error Measure= 
+Custom Error Measure= 7187.699999999996
 
 
+Tweaking Expt #4
+
+Leaving LSTM layer at tanh.  Turning the synthesis layer to LeakyReLU.
+Otherwise as above.
+
+Version 4b1db3cfefbe40c6e28b69bd33a3a6bb9c2e631d
+
+Custom Error Measure= 7168.699999999999
+
+
+Tweaking Expt #5
+
+Synthesis layer back to ReLU.  Add another layer between it and the
+output layer.
+
+Version 2bfef4bcd6f55416e5287bbaeda4a3aff1aa7ede
+
+Custom Error Measure= 7753.499999999999
