@@ -137,9 +137,10 @@ else:
     time_layer = LSTM(lstm_module_nodes, stateful = False,
                       activation='tanh')(inputs1)
 
-    synth_layer = Dense(synth_layer_nodes, activation='relu')(time_layer)
+    synth_layer = Dense(synth_layer_nodes, activation='linear')(time_layer)
+    lrlu_layer = keras.layers.LeakyReLU()(synth_layer)
 
-    output_layer = Dense(num_outputs, activation='sigmoid')(synth_layer)
+    output_layer = Dense(num_outputs, activation='sigmoid')(lrlu_layer)
 
     mymodel = Model(inputs=[inputs1], outputs=[output_layer])
 
