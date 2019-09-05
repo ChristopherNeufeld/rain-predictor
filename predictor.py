@@ -20,6 +20,7 @@ def histBinNum(val, nBins):
 
 # Main execution begins here
 
+errwts = [1, 0.7, 0.9, 0.6, 0.8, 0.5, 0.7, 0.4, 0.6, 0.3]
 
 suffixes = [ '1H_R', '1H_HR', '2H_R', '2H_HR', '3H_R', '3H_HR',
              '4H_R', '4H_HR', '5H_R', '5H_HR' ]
@@ -97,6 +98,7 @@ if args.candidates:
     xvals, yvals, datasize, npts, hashval = rpreddtypes.getDataVectors(args.candidates, args.pathfile, doShuffle = False)
 
     ypred = mymodel.predict(x = xvals)
+    errorMeasure = 0
 
     if args.withHist:
         for datapt in range(npts):
@@ -110,16 +112,20 @@ if args.candidates:
                         binnum = histBinNum(ypred[datapt, bitnum],
                                             args.histBins)
                         hdata[bitnum, 2, binnum] += 1
+                        errorMeasure += binnum * errwts[bitnum]
                 else:
                     if ypred[datapt, bitnum] < 0.5:
                         binnum = histBinNum(ypred[datapt, bitnum],
                                             args.histBins)
                         hdata[bitnum, 1, binnum] += 1
+                        errorMeasure += (args.histBins - binnum - 1) * errwts[bitnum]
                     else:
                         binnum = histBinNum(ypred[datapt, bitnum],
                                             args.histBins)
                         hdata[bitnum, 3, binnum] += 1
 
+
+        print('Custom Error Measure= {0}'.format(errorMeasure))
         for bitnum in range(10):
             with open(args.histPrefix + suffixes[bitnum], 'w') as ofile:
                 ofile.write('# Bin_Centre    TN   FN   FP   TP\n')
