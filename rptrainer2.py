@@ -27,6 +27,7 @@ import numpy as np
 
 lstm_module_nodes = 500
 synth_layer_nodes = 300
+hidden_layer_nodes = 100
 num_outputs = 10
 
 
@@ -137,10 +138,10 @@ else:
     time_layer = LSTM(lstm_module_nodes, stateful = False,
                       activation='tanh')(inputs1)
 
-    synth_layer = Dense(synth_layer_nodes, activation='linear')(time_layer)
-    lrlu_layer = keras.layers.LeakyReLU()(synth_layer)
+    synth_layer = Dense(synth_layer_nodes, activation='relu')(time_layer)
+    hidden_layer = Dense(hidden_layer_nodes, activation='relu')(synth_layer)
 
-    output_layer = Dense(num_outputs, activation='sigmoid')(lrlu_layer)
+    output_layer = Dense(num_outputs, activation='sigmoid')(hidden_layer)
 
     mymodel = Model(inputs=[inputs1], outputs=[output_layer])
 
