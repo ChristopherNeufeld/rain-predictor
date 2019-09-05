@@ -136,12 +136,11 @@ else:
 
     
     time_layer = LSTM(lstm_module_nodes, stateful = False,
-                      activation='tanh')(inputs1)
+                      activation='relu')(inputs1)
 
     synth_layer = Dense(synth_layer_nodes, activation='relu')(time_layer)
-    hidden_layer = Dense(hidden_layer_nodes, activation='relu')(synth_layer)
 
-    output_layer = Dense(num_outputs, activation='sigmoid')(hidden_layer)
+    output_layer = Dense(num_outputs, activation='sigmoid')(synth_layer)
 
     mymodel = Model(inputs=[inputs1], outputs=[output_layer])
 
