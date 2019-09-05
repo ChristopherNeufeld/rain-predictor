@@ -285,3 +285,41 @@ Total confusion= [[[365  37]
 
  [[560  10]
   [ 15  62]]]
+
+
+
+===============================================================
+
+
+Tweaking Expt #1
+
+Tweaking the network.  predictor.py creates a custom error measure, a
+weighted sum of departures for those entries that failed.
+
+First version.  39a6ab2d40f8c1ef21c1ca5e8f0d3dd44102bd93
+All layers relu.  Node counts 500,300,10
+No regularization
+
+Custom Error Measure= 6965.599999999999
+
+
+Tweaking Expt #2
+
+LSTM layer sigmoid.  All other layers relu.  Node counts 500,300,10
+No regularization
+
+Version 078cd9930ae2372ce3fd05b53457aff58a8719b6
+
+Custom Error Measure= 7434.300000000001
+
+
+Tweaking Expt #3
+
+LSTM layer tanh.  All other layers relu.  Node counts 500,300,10
+No regularization
+
+Version 597bbb39f47510c91b3decf6c8634707167452e2
+
+Custom Error Measure= 
+
+
