@@ -135,7 +135,7 @@ else:
 
     
     time_layer = LSTM(lstm_module_nodes, stateful = False,
-                      activation='sigmoid')(inputs1)
+                      activation='tanh')(inputs1)
 
     synth_layer = Dense(synth_layer_nodes, activation='relu')(time_layer)
 
