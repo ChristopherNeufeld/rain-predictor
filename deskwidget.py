@@ -16,27 +16,31 @@ baseHeight = 600
 circlesize = 20
 
 
-class BaseWidget(tkinter.Frame):
-    def __init__(self):
-        super().__init__()
+class BaseWidget():
+    def __init__(self, root):
+        self.root = root
+        root.title("Rain Predictor")
+        self.canvas = tkinter.Canvas(root,
+                                     bg = "Black",
+                                     width = baseWidth,
+                                     height = baseHeight)
+        self.canvas.pack()
         self.vals = [-1] * 10
         self.drawScreen()
-        self.canvas = None
 
     def drawScreen(self):
-        self.master.title("Rain Predictor")
-        self.canvas = tkinter.Canvas(self)
-        self.pack(fill=tkinter.BOTH, expand=1)
-        self.canvas.create_text(baseWidth / 5,
+        self.canvas.create_text(baseWidth / 6,
                                 baseHeight / 12,
                                 anchor=tkinter.W,
+                                fill = "White",
                                 text = "Any Rain")
         self.canvas.create_text(baseWidth * 7 / 10, baseHeight / 12,
+                                fill = "White",
                                 text = "Heavy Rain")
+        self.canvas.pack()
         self.updateScreen()
 
     def updateScreen(self):
-        print('self= {},  self.canvas= {}'.format(self, self.canvas))
         for time in range(5):
             for intensity in range(2):
                 centreX = (1 + 2 * intensity) * baseWidth / 4
@@ -56,33 +60,31 @@ class BaseWidget(tkinter.Frame):
                                         centreY - circlesize / 2,
                                         centreX + circlesize / 2,
                                         centreY + circlesize / 2,
-                                        outline = "#000000",
+                                        outline = "White",
                                         fill=colour,
                                         width = 2)
         
         self.canvas.pack(fill=tkinter.BOTH, expand=1)
-        print (self.canvas)
 
 
     def updateValues(self, vallist):
         self.vals = vallist.copy()
-        print (self.canvas)
         self.updateScreen()
+
+
+def worker(screen):
+    print ('Hello')
+    newlist = []
+    for i in range(10):
+        newlist.append(random.random())
+    screen.updateValues(newlist)
+    root.after(1000, worker, screen)
 
 
 root = tkinter.Tk()
 
 root.geometry('{0}x{1}'.format(baseWidth, baseHeight))
-widget = BaseWidget()
+widget = BaseWidget(root)
 
-def worker():
-    print ('Hello')
-    newlist = []
-    for i in range(10):
-        newlist.append(random.random())
-    widget.updateValues(newlist)
-    root.after(1000, worker)
-
-
-worker()
+root.after(1000, worker, widget)
 root.mainloop()
