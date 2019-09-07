@@ -71,6 +71,7 @@ class BaseWidget():
         self.vals = [-1] * 10
         self.gifImages = [ None ] * 6
         self.gifnum = 0
+        self.validDate = ''  # last time we had valid data
 
         self.drawScreen()
 
@@ -181,6 +182,8 @@ class BaseWidget():
                 self.gifFileNames[inum] = ( self.gifFormat.format(YEAR = dYear, MONTH = dMonth, DAY = dDay, HOUR = dHour, MIN = dMin) )
                 if not os.path.exists(self.binFileNames[inum]):
                     if retry == 2:
+                        if now - self.validDate > datetime.timedelta(0, 1800):
+                            self.updateLabel.configure(bg = "Yellow")
                         return
 
                     gooddat = False
@@ -214,6 +217,8 @@ class BaseWidget():
             
         self.vals = self.network.predict(xvals)[0]
         self.lastUpdate.set(thisstring)
+        self.validDate = now
+        self.updateLabel.configure(bg = "White")
         self.needRefresh = 1
         
 
