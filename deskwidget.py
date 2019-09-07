@@ -105,14 +105,20 @@ class BaseWidget():
         
         
     def drawScreen(self):
-        self.canvas.create_text(self.width / 6,
-                                self.height / 12,
-                                anchor=tkinter.W,
+        self.canvas.create_text(self.width * 0.30,
+                                self.height * 0.08,
                                 fill = "White",
                                 text = "Any Rain")
-        self.canvas.create_text(self.width * 7 / 10, self.height / 12,
+        self.canvas.create_text(self.width * 0.7, self.height * 0.08,
                                 fill = "White",
                                 text = "Heavy Rain")
+
+        for i in range(5):
+            self.canvas.create_text(0.1 * self.width,
+                                    (i + 1) / 6 * self.height,
+                                    fill = "White",
+                                    text = '{0}-{1}'.format(i, i+1))
+        
         self.canvas.pack()
         self.updateScreen()
 
@@ -122,8 +128,8 @@ class BaseWidget():
         self.needRefresh = 0
         for time in range(5):
             for intensity in range(2):
-                centreX = (1 + 2 * intensity) * baseWidth / 4
-                centreY = (time + 1) * baseHeight / 6
+                centreX = (0.35 + 0.45 * intensity) * self.width
+                centreY = (time + 1) / 6 * self.height
                 colour = None
                 circleval = self.vals[2 * time + intensity]
                 if circleval < 0:
@@ -158,22 +164,11 @@ class BaseWidget():
 
         now = now.replace(minute = nowMinute)
 
-        # now.minute = nowMinute
-
-        thisstring = ('{YEAR:04d}_{MONTH:02d}_{DAY:02d}_{HOUR:02d}_{MINUTE:02d}'
-                      .format(YEAR=nowYear,
-                              MONTH=nowMonth,
-                              DAY=nowDay,
-                              HOUR=nowHour,
-                              MINUTE=nowMinute))
-
-        if thisstring == self.lastUpdate:
-            return
-
         if self.lockfile and os.path.exists(self.lockfile):
             return
 
-        for retry in range(2):
+        for retry in range(3):
+            gooddat = True
             for inum in range(6):
                 delta = datetime.timedelta(0, 600 * (retry + 5 - inum))
                 dtime = now - delta
@@ -184,8 +179,25 @@ class BaseWidget():
                 dMin = dtime.minute
                 self.binFileNames[inum] = ( self.binFormat.format(YEAR = dYear, MONTH = dMonth, DAY = dDay, HOUR = dHour, MIN = dMin) )
                 self.gifFileNames[inum] = ( self.gifFormat.format(YEAR = dYear, MONTH = dMonth, DAY = dDay, HOUR = dHour, MIN = dMin) )
-                if retry == 1 and not os.path.exists(self.binFileNames[inum]):
-                    return
+                if not os.path.exists(self.binFileNames[inum]):
+                    if retry == 2:
+                        return
+
+                    gooddat = False
+
+            if gooddat:
+                thisstring = ('{YEAR:04d}_{MONTH:02d}_{DAY:02d}_{HOUR:02d}_{MINUTE:02d}'
+                              .format(YEAR=dYear,
+                                      MONTH=dMonth,
+                                      DAY=dDay,
+                                      HOUR=dHour,
+                                      MINUTE=dMin))
+
+                break
+
+
+        if thisstring == self.lastUpdate:
+            return
 
         reader = rpreddtypes.RpBinReader()
         reader.read(self.binFileNames[0])
