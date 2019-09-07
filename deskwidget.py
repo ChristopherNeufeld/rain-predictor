@@ -10,6 +10,7 @@ import tkinter
 import os
 import configparser
 import datetime
+import threading
 
 
 # Main code starts here
@@ -56,6 +57,8 @@ class BaseWidget():
         self.gwin = None
         self.giflabel = None
 
+        self.mutex = threading.Lock()
+
         root.title("Rain Predictor")
         self.gifbutton = tkinter.Button(root, bg = "White", text="Show GIFs",
                                         command=self.makeGifWindow)
@@ -76,6 +79,7 @@ class BaseWidget():
         self.drawScreen()
 
     def makeGifWindow(self):
+        self.mutex.acquire()
         self.gwin = tkinter.Toplevel()
         self.gwin.wm_title("Radar Images")
         for i in range(6):
@@ -87,22 +91,27 @@ class BaseWidget():
                                       image = self.gifImages[0])
         self.giflabel.pack()
         self.gwin.protocol("WM_DELETE_WINDOW", self.closeGifWindow)
+        self.mutex.release()
         
 
     def closeGifWindow(self):
+        self.mutex.acquire()
         self.gwin.destroy()
         self.giflabel = None
         self.gwin = None
         self.gifImages = [ None ] * 6
         self.gifnum = 0
-
+        self.mutex.release()
 
 
     def rotateGifs(self):
+        self.mutex.acquire()
         if not self.gwin:
+            self.mutex.release()
             return
         self.gifnum = (self.gifnum + 1) % 6
         self.giflabel.configure(image = self.gifImages[self.gifnum])
+        self.mutex.release()
         
         
     def drawScreen(self):
