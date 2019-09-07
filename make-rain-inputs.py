@@ -54,7 +54,7 @@ parser.add_argument('--override-intensities', type=list,
                     help='Override the colour codes for '
                     'intensities')
 parser.add_argument('--override-scaling', type=list,
-                    dest='rescales', default=[2, 3, 4],
+                    dest='rescales', default=[],
                     help='Override the coarse-scaling settings.')
 parser.add_argument('--build-preprocessed', type=bool, dest='preproc',
                     default = True,
