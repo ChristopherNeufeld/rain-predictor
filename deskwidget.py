@@ -24,6 +24,8 @@ uncertainColour = "Yellow"
 rainColour = "Red"
 canvasColour = "Black"
 refreshTime = 1000
+yesRainThreshold = 0.95
+noRainThreshold = 0.1
 
 savedNetwork = None
 gifFileFormatString = None
@@ -32,7 +34,8 @@ binFileFormatString = None
 
 class BaseWidget():
     def __init__(self, root, rwidth, rheight, csize, hcolour,
-                 noRainColour, maybeRainColour, yesRainColour, canvasBg,
+                 noRainColour, maybeRainColour, yesRainColour,
+                 noRainLimit, yesRainLimit, canvasBg,
                  loopTime, network, gifFormat, binFormat, lockfile):
         self.root = root
         self.width = rwidth
@@ -42,6 +45,8 @@ class BaseWidget():
         self.noRainColour = noRainColour
         self.maybeRainColour = maybeRainColour
         self.yesRainColour = yesRainColour
+        self.noRainLimit = noRainLimit
+        self.yesRainLimit = yesRainLimit
         self.canvasBg = canvasBg
         self.loopTime = loopTime
         self.network = network
@@ -144,9 +149,9 @@ class BaseWidget():
                 circleval = self.vals[2 * time + intensity]
                 if circleval < 0:
                     colour = "black"
-                elif circleval < 0.05:
+                elif circleval < self.noRainLimit:
                     colour = self.noRainColour
-                elif circleval > 0.95:
+                elif circleval > self.yesRainLimit:
                     colour = self.yesRainColour
                 else:
                     colour = self.maybeRainColour
@@ -267,6 +272,10 @@ uncertainColour = config.get('Graphics', 'LightMaybeRainColour',
                              fallback=uncertainColour)
 rainColour = config.get('Graphics', 'LightYesRainColour',
                         fallback=rainColour)
+noRainThreshold = float(config.get('Graphics', 'NoRainThreshold',
+                                   fallback=noRainThreshold))
+yesRainThreshold = float(config.get('Graphics', 'YesRainThreshold',
+                                    fallback=noRainThreshold))
 refreshTime = int(config.get('Graphics', 'GifSpeedMs',
                              fallback=refreshTime))
 
@@ -304,7 +313,8 @@ root = tkinter.Tk()
 root.geometry('{0}x{1}'.format(baseWidth, baseHeight))
 widget = BaseWidget(root, baseWidth, baseHeight, 
                     circlesize, haloColour, clearColour, uncertainColour,
-                    rainColour, canvasColour, refreshTime,
+                    rainColour, noRainThreshold, yesRainThreshold,
+                    canvasColour, refreshTime,
                     network, gifFileFormatString, binFileFormatString,
                     lockfile)
 
