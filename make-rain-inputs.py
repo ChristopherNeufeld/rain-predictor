@@ -162,6 +162,8 @@ for ifile in args.ifilenames:
     cfile.close()
 
     totalRain = 0
+    imgoffset = 0
+    valid = False
     
     if ( not convertReader.is_complete()
          or not convertReader.has_screen_descriptor() ):
@@ -169,17 +171,36 @@ for ifile in args.ifilenames:
                '.gif file'.format(ifile))
         sys.exit(1)
 
-    if ( len(convertReader.blocks) != 2
-         or not isinstance(convertReader.blocks[0], gif.Image)
-         or not isinstance(convertReader.blocks[1], gif.Trailer)):
-        print ('While processing file: {}'.format(ifile))
-        print ('The code only accepts input files with a single block of '
-               'type Image followed by one of type Trailer.  This '
-               'constraint has not been met, the code will have to be '
-               'changed to handle the more complicated case.')
+    if ( len(convertReader.blocks) == 2
+         and isinstance(convertReader.blocks[0], gif.Image)
+         and isinstance(convertReader.blocks[1], gif.Trailer)):
+
+        valid = True
+        imgoffset = 0
+
+    if ( len(convertReader.blocks) == 3
+         and isinstance(convertReader.blocks[0], gif.GraphicControlExtension)
+         and isinstance(convertReader.blocks[1], gif.Image)
+         and isinstance(convertReader.blocks[2], gif.Trailer)):
+
+        valid = True
+        imgoffset = 1
+    
+
+    if not valid:
+        print ("While processing file: ", sys.argv[i+1])
+        print ("The code only accepts input files with a single block of "
+               "type Image followed by one of type Trailer, and optionally "
+               "a graphic control extension block before the image block.  "
+               "This "
+               "constraint has not been met, the code will have to be "
+               "changed to handle the more complicated case.")
+
+        print('blocks: {}'.format(reader[i].blocks))
         sys.exit(1)
+
         
-    convertBuffer = convertReader.blocks[0].get_pixels()
+    convertBuffer = convertReader.blocks[imgoffset].get_pixels()
     convertColours = convertReader.color_table
     convertWidth = convertReader.width
     convertHeight = convertReader.height
