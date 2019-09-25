@@ -7,6 +7,7 @@
 
 import argparse
 import sys
+import os
 import gif
 import rpreddtypes
 from rpreddtypes import normalize
@@ -156,6 +157,11 @@ if args.preproc:
 
 
 for ifile in args.ifilenames:
+
+    if os.path.getsize(ifile) == 0:
+        print('Skipping zero length file: {}'.format(ifile))
+        continue
+    
     convertReader = gif.Reader()
     cfile = open(ifile, 'rb')
     convertReader.feed(cfile.read())
