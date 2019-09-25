@@ -77,15 +77,40 @@ if ( reader[0].width != reader[1].width
     print ("The gif logical screen sizes are not identical")
     sys.exit(1)
 
+
+imgoffsets = [ 0 ] * 3    
+
 for i in range(3):
-    if ( len(reader[i].blocks) != 2
-         or not isinstance(reader[i].blocks[0], gif.Image)
-         or not isinstance(reader[i].blocks[1], gif.Trailer)):
+
+    valid = False
+
+    if ( len(reader[i].blocks) == 2
+         and isinstance(reader[i].blocks[0], gif.Image)
+         and isinstance(reader[i].blocks[1], gif.Trailer)):
+
+        valid = True
+        imgoffsets[i] = 0
+
+
+    if ( len(reader[i].blocks) == 3
+         and isinstance(reader[i].blocks[0], gif.GraphicControlExtension)
+         and isinstance(reader[i].blocks[1], gif.Image)
+         and isinstance(reader[i].blocks[2], gif.Trailer)):
+
+        valid = True
+        imgoffsets[i] = 1
+
+
+    if not valid:
         print ("While processing file: ", sys.argv[i+1])
         print ("The code only accepts input files with a single block of "
-               "type Image followed by one of type Trailer.  This "
+               "type Image followed by one of type Trailer, and optionally "
+               "a graphic control extension block before the image block.  "
+               "This "
                "constraint has not been met, the code will have to be "
                "changed to handle the more complicated case.")
+
+        print('blocks: {}'.format(reader[i].blocks))
         sys.exit(1)
     
     
@@ -104,9 +129,10 @@ output_colour_depth = 8
 output_colour_table = reader[0].color_table
 output_pixel_block = []
 
-for ind0, ind1, ind2 in zip(reader[0].blocks[0].get_pixels(),
-                            reader[1].blocks[0].get_pixels(),
-                            reader[2].blocks[0].get_pixels()):
+
+for ind0, ind1, ind2 in zip(reader[0].blocks[imgoffsets[0]].get_pixels(),
+                            reader[1].blocks[imgoffsets[1]].get_pixels(),
+                            reader[2].blocks[imgoffsets[2]].get_pixels()):
     tup0 = reader[0].color_table[ind0]
     tup1 = reader[1].color_table[ind1]
     tup2 = reader[2].color_table[ind2]
