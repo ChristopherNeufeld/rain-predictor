@@ -29,6 +29,10 @@ parser.add_argument('ifilenames', type=str,
 parser.add_argument('--baseline', type=str,
                     dest='baseline',
                     help='The baseline .gif file')
+parser.add_argument('--mask', type=str,
+                    dest='mask',
+                    help='The masking .gif file, rain pixels '
+                    'corresponding to black areas on the mask are ignored')
 parser.add_argument('--width', type=int, dest='owidth',
                     default=-1,
                     help='The width of the sub-rectangle '
@@ -99,6 +103,14 @@ if ( not baselineReader.is_complete()
     print ('Failed to parse {0} as a '
            '.gif file'.format(args.baseline))
     sys.exit(1)
+
+maskpixels = []
+if args.mask:
+    maskReader = gif.Reader()
+    mfile = open(args.mask, 'rb')
+    maskReader.feed(mfile.read())
+    mfile.close()
+    maskpixels = maskReader.blocks[0].get_pixels()
 
 baselineBuffer = baselineReader.blocks[0].get_pixels()
 baselineColours = baselineReader.color_table
@@ -242,6 +254,10 @@ for ifile in args.ifilenames:
             continue
 
         if pixel >= len(convertBuffer):
+            output_block.append(0)
+            continue
+
+        if maskpixels and maskpixels[pixel] == 0:
             output_block.append(0)
             continue
 
