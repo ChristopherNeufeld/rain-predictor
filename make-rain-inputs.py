@@ -175,9 +175,8 @@ if args.preproc:
 
 for ifile in args.ifilenames:
 
-    print(ifile)
     if os.path.getsize(ifile) == 0:
-#        print('Skipping zero length file: {}'.format(ifile))
+        print('Skipping zero length file: {}'.format(ifile))
         continue
     
     convertReader = gif.Reader()
