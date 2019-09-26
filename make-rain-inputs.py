@@ -70,6 +70,11 @@ parser.add_argument('--preprocessed-num-cuts', type=int,
                     default = 20,
                     help = 'Number of radial cuts to produce '
                     'when preprocessing.')
+parser.add_argument('--detailed-rings', type=int, dest='detailedRings',
+                    default = 2,
+                    help = 'Number of inner rings of modules that hold '
+                    'additional detail (related to phantom rain '
+                    'detection).')
 parser.add_argument('--heavy', type=int, dest='heavy',
                     default = 3,
                     help = 'Intensity of heavy rain, for use when '
@@ -158,8 +163,9 @@ if args.preproc:
 
 for ifile in args.ifilenames:
 
+    print(ifile)
     if os.path.getsize(ifile) == 0:
-        print('Skipping zero length file: {}'.format(ifile))
+#        print('Skipping zero length file: {}'.format(ifile))
         continue
     
     convertReader = gif.Reader()
@@ -218,14 +224,9 @@ for ifile in args.ifilenames:
         sys.exit(1)
 
     output_block = []
-    preprocessed = None
-    counts = None
-    
-    if args.preproc:
-        preprocessed = bytearray(2 * numModules)
-        counts = [0] * numModules
-        sums = [0] * numModules
 
+# First, compute the new output block.  We'll do preprocessing on that
+# once its complete
     for pixel in range(len(baselineBuffer)):
 
         row = pixel // baselineWidth
@@ -261,33 +262,116 @@ for ifile in args.ifilenames:
             output_block.append(appendval)
             totalRain += appendval
 
-            if args.preproc and appendval != 0:
-                modnum = modules[col][row]
-                sums[modnum] += appendval
-                counts[modnum] += 1
-                if appendval > preprocessed[2 * modnum]:
-                    preprocessed[2 * modnum] = appendval
+
+
+    preprocessed = None
+    maxvals = None
+    counts = None
+    densepixels = None
+    densecounts = None
+    
+    if args.preproc:
+        maxvals = [0] * numModules
+        counts = [0] * numModules
+        densecounts = [0] * numModules
+        densepixels = [1] * len(output_block)
+        sums = [0] * numModules
+
+        for r1 in range(newheight):
+            for c1 in range(newwidth):
+                i1 = r1 * newwidth + c1
+                if output_block[i1] == 0:
+                    densepixels[i1] = 0
+
+                    c2 = c1
+                    r2 = r1 + 1
+                    if r2 < newheight:
+                        i2 = r2 * newwidth + c2
+                        densepixels[i2] = 0
+
+                    r2 = r1 - 1
+                    if r2 >= 0:
+                        i2 = r2 * newwidth + c2
+                        densepixels[i2] = 0
+
+                    r2 = r1
+                    c2 = c1 + 1
+                    if c2 < newwidth:
+                        i2 = r2 * newwidth + c2
+                        densepixels[i2] = 0
+                        
+                    c2 = c1 - 1
+                    if c2 >= 0:
+                        i2 = r2 * newwidth + c2
+                        densepixels[i2] = 0
+        
+        for pixel in range(len(baselineBuffer)):
+
+            row = pixel // baselineWidth
+            col = pixel % baselineWidth
+
+            if row < yoffset:
+                continue
+
+            if row >= yoffset + newheight:
+                break
+
+            if col < xoffset or col >= xoffset + newwidth:
+                continue
+
+            if pixel >= len(convertBuffer):
+                continue
+
+            r1 = row - yoffset
+            c1 = col - xoffset
+            i1 = r1 * newwidth + c1
+            
+            modnum = modules[col][row]
+            sums[modnum] += appendval
+            counts[modnum] += 1
+            densecounts[modnum] += densepixels[i1]
+            if output_block[i1] > maxvals[modnum]:
+                maxvals[modnum] = output_block[i1]
+
+
+        nbytes = ( args.detailedRings * args.numRadialCuts * 3 +
+                   (args.numRings - args.detailedRings)
+                   * args.numRadialCuts * 2 )
+
+        preprocessed = bytearray(nbytes)
+        index = 0
+        for ring in range(args.numRings):
+            for sector in range(args.numRadialCuts):
+                modnum =  ring * args.numRadialCuts + sector
+                if counts[modnum] == 0:
+                    index += 2
+                    if ring < args.detailedRings:
+                        index += 1
+                    continue
+                
+                preprocessed[index] = int(normalize(maxvals[modnum],
+                                                    args.heavy,
+                                                    len(args.intensities),
+                                                    5)
+                                          * 255)
+                index += 1
+                preprocessed[index] = int(normalize(sums[modnum] / counts[modnum],
+                                                    args.heavy,
+                                                    len(args.intensities),
+                                                    5)
+                                          * 255)
+
+                if ring < args.detailedRings:
+                    index += 1
+                    preprocessed[index] = int(densecounts[modnum] / counts[modnum] * 255)
+
 
     newfilename = ifile + '.bin'
-
-    if args.preproc:
-        for modnum in range(numModules):
-            if counts[modnum] > 0:
-                preprocessed[2 * modnum] = int (normalize(preprocessed[2 * modnum],
-                                                          args.heavy,
-                                                          len(args.intensities),
-                                                          5)
-                                                * 255)
-                preprocessed[2 * modnum + 1] = int (normalize(sums[modnum] / counts[modnum],
-                                                              args.heavy,
-                                                              len(args.intensities),
-                                                              5)
-                                                    * 255)
 
     writer = rpreddtypes.RpBinWriter()
     writer.addRawdat(newwidth, newheight, xoffset, yoffset,
                      len(args.intensities), output_block, [2, 3, 4])
-    writer.addPreparedData(2 * numModules, args.numRings,
+    writer.addPreparedData(len(preprocessed), args.numRings,
                            args.numRadialCuts, preprocessed)
     writer.write(newfilename, len(args.intensities), totalRain)
 
