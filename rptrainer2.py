@@ -12,12 +12,21 @@ import tensorflow as tf
 # from tensorflow.keras.callbacks import TensorBoard, EarlyStopping
 
 import keras
-from keras.layers import Input, Dense, Concatenate, LSTM
+from keras.layers import Input, Dense, Concatenate, LSTM, BatchNormalization, Dropout
 from keras.models import Sequential, Model
 
 import sys
 import numpy as np
 
+
+# >>> input = numpy.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+# >>> kernel = [0, 3]
+# >>> pad = [[i, i] for i in kernel]
+# >>> padded_input = numpy.pad(input, pad, "wrap")
+# >>> padded_input
+# array([[1, 2, 3, 1, 2, 3, 1, 2, 3],
+#        [4, 5, 6, 4, 5, 6, 4, 5, 6],
+#        [7, 8, 9, 7, 8, 9, 7, 8, 9]])
 
 
 
@@ -25,8 +34,9 @@ import numpy as np
 ### Main code entry point here
 
 
-lstm_module_nodes = 500
-synth_layer_nodes = 300
+geometry_layer_nodes = 40
+lstm_module_nodes = 10
+synth_layer_nodes = 10
 hidden_layer_nodes = 100
 num_outputs = 10
 
@@ -44,18 +54,22 @@ parser.add_argument('--pathfile', type=str, dest='pathfile',
 parser.add_argument('--training-set', type=str, dest='trainingset',
                     required=True,
                     help='The file containing the training set '
-                    'to use.  A fraction will be retained for '
-                    'validation.')
+                    'to use.')
+parser.add_argument('--validation-set', type=str, dest='validationset',
+                    required=True,
+                    help='The file containing the validation set '
+                    'to use.')
 parser.add_argument('--savefile', type=str, dest='savefile',
+                    required=True,
                     help='The filename at which to save the '
                     'trained network parameters.  A suffix will be '
                     'applied to the name to avoid data '
                     'incompatibility.')
-parser.add_argument('--validation-frac', type=float, dest='vFrac',
-                    default = 0.2,
-                    help = 'That fraction of the training set to '
-                    'be set aside for validation rather than '
-                    'training.')
+parser.add_argument('--saved-vecs-dir', type=str, dest='savedvecs',
+                    help='A directory to hold pre-loaded training '
+                    'and validation data.  If files are present, '
+                    'will load from there, otherwise it will load '
+                    'as normal and save there.')
 parser.add_argument('--holdout0', type=str, dest='holdout0',
                     help='The holdout dataset used for final '
                     'validation, no rain at present')
@@ -91,18 +105,52 @@ args = parser.parse_args()
 
 xvals = None
 yvals = None
+mvals = None
+
+vxvals = None
+vyvals = None
+vmvals = None
+vdatasize = None
+vnpts = None
+
 datasize = None
 npts = None
 hashval = None
 
 if args.nEpochs > 0:
-    xvals, yvals, datasize, npts, hashval = rpreddtypes.getDataVectors(args.trainingset, args.pathfile)
 
-    if not args.nohash:
-        if hashval != 'd1bef849006cf57a':
-            print('Unexpected hash value {0}.  Input data may have changed.'
-                  .format(hashval))
-            sys.exit(1)
+    needload = True
+    if args.savedvecs:
+        if os.path.exists(args.savedvecs + '/savedvecs.npz'):
+            needload = False
+            container = np.load(args.savedvecs + '/savedvecs.npz')
+            xvals = container['xvals']
+            yvals = container['yvals']
+            mvals = container['mvals']
+            vxvals = container['vxvals']
+            vyvals = container['vyvals']
+            vmvals = container['vmvals']
+            datasize = xvals.shape[2]
+
+    if needload:
+        xvals, yvals, mvals, datasize, npts, hashval = rpreddtypes.getDataVectors(args.trainingset, args.pathfile)
+
+        if not args.nohash:
+            if hashval != '968918db5a466fa9':
+                print('Unexpected hash value {0}.  Input data may have changed.'
+                      .format(hashval))
+                sys.exit(1)
+
+        vxvals, vyvals, vmvals, vdatasize, vnpts, vhashval = rpreddtypes.getDataVectors(args.validationset, args.pathfile)
+
+        if args.savedvecs:
+            if not os.path.exists(args.savedvecs):
+                os.mkdir(args.savedvecs)
+
+            np.savez(args.savedvecs + '/savedvecs.npz',
+                     xvals = xvals, yvals = yvals, mvals = mvals,
+                     vxvals = vxvals, vyvals = vyvals, vmvals = vmvals)
+
 
 useoptimizer = keras.optimizers.RMSprop()
 if args.optimizer == 0:
@@ -133,16 +181,30 @@ if args.Continue:
 else:
 
     inputs1 = Input(batch_shape = (None, 6, datasize))
+    inputsM = Input(batch_shape = (None, 1))
 
-    
+
+    geometry_layer = Dense(geometry_layer_nodes, activation='relu')(inputs1)
+    norm_layer1 = BatchNormalization()(geometry_layer)
+    drop_layer1 = Dropout(rate=0.4)(norm_layer1)
+
     time_layer = LSTM(lstm_module_nodes, stateful = False,
-                      activation='relu')(inputs1)
+                      activation='relu')(drop_layer1)
 
-    synth_layer = Dense(synth_layer_nodes, activation='relu')(time_layer)
+    drop_layer2 = Dropout(rate=0.4)(time_layer)
 
-    output_layer = Dense(num_outputs, activation='sigmoid')(synth_layer)
+#     concat = Concatenate()([time_layer, inputsM])
 
-    mymodel = Model(inputs=[inputs1], outputs=[output_layer])
+#     synth_layer = Dense(synth_layer_nodes, activation='relu')(concat)
+    synth_layer = Dense(synth_layer_nodes, activation='relu')(drop_layer2)
+
+
+    norm_layer2 = BatchNormalization()(synth_layer)
+
+    output_layer = Dense(num_outputs, activation='sigmoid')(norm_layer2)
+
+    # mymodel = Model(inputs=[inputs1, inputsM], outputs=[output_layer])
+    mymodel = Model(inputs=inputs1, outputs=[output_layer])
 
     mymodel.compile(loss='binary_crossentropy',
                     optimizer=useoptimizer)
@@ -163,11 +225,14 @@ if args.nEpochs > 0:
     if args.tensorboard:
         calllist.append(cb2)
 
+    # history = mymodel.fit(x = [xvals, mvals], y = yvals, epochs = args.nEpochs,
+    #                       validation_data = [[vxvals, vmvals], vyvals],
+    #                       verbose=1, batch_size = 512,
+    #                       shuffle = True, callbacks = calllist)
     history = mymodel.fit(x = xvals, y = yvals, epochs = args.nEpochs,
+                          validation_data = [vxvals, vyvals],
                           verbose=1, batch_size = 512,
-                          validation_split = args.vFrac,
                           shuffle = True, callbacks = calllist)
-
 
     histdir = "histories/" + args.name
     if not os.path.exists(histdir):
@@ -202,7 +267,7 @@ if args.holdout0 or args.holdout1:
         # This is the branch when it is not currently raining, but it
         # will rain soon.
 
-        hxvals, hyvals, hjunk1, hnpts, hjunk2 = rpreddtypes.getDataVectors(args.holdout0, args.pathfile, doShuffle = False)
+        hxvals, hyvals, hjunk0, hjunk1, hnpts, hjunk2 = rpreddtypes.getDataVectors(args.holdout0, args.pathfile)
 
         willRainIn2 = 0
         predWillRainIn1or2 = 0
@@ -216,8 +281,6 @@ if args.holdout0 or args.holdout1:
                 willRainIn2 += 1
                 if hypred[datapt, 0] >= 0.5 or hypred[datapt, 2] >= 0.5:
                     predWillRainIn1or2 += 1
-                else:
-                    print('Failed prediction datapt= {0}'.format(datapt))
 
             if hyvals[datapt, 0] == 0 and hyvals[datapt, 2] == 0:
                 willRainIn3plus += 1
@@ -244,7 +307,7 @@ if args.holdout0 or args.holdout1:
         
         
     if args.holdout1:
-        hxvals, hyvals, hjunk1, hnpts, hjunk2 = rpreddtypes.getDataVectors(args.holdout1, args.pathfile, doShuffle = False)
+        hxvals, hyvals, hjunk0, hjunk1, hnpts, hjunk2 = rpreddtypes.getDataVectors(args.holdout1, args.pathfile)
 
         willStopIn1 = 0
         predWillStopIn1 = 0
@@ -256,16 +319,16 @@ if args.holdout0 or args.holdout1:
 
             if hyvals[datapt, 0] == 0:
                 willStopIn1 += 1
-                if hypred[datapt, 0] >= 0.5:
+                if hypred[datapt, 0] < 0.5:
                     predWillStopIn1 += 1
 
             if hyvals[datapt, 0] == 1 and hyvals[datapt, 2] == 1:
                 willStopIn3plus += 1
-                if ( ( hypred[datapt, 0] < 0.5
-                       and hypred[datapt, 2] < 0.5 )
-                     and (hypred[datapt, 4] >= 0.5
-                          or hypred[datapt, 6] >= 0.5
-                          or hypred[datapt, 8] >= 0.5)):
+                if ( ( hypred[datapt, 0] >= 0.5
+                       and hypred[datapt, 2] >= 0.5 )
+                     and (hypred[datapt, 4] < 0.5
+                          or hypred[datapt, 6] < 0.5
+                          or hypred[datapt, 8] < 0.5)):
                     predWillStopIn3plus += 1
                     
             for bitnum in range(10):
