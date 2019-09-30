@@ -5,6 +5,8 @@ import gzip
 import hashlib
 import abc
 import random
+import re
+import datetime
 
 
 # First, classes to manipulate the intermediate binary file.
@@ -464,7 +466,36 @@ def normalize(val, heavy, num_intensities, intensity_gap):
         return (intensity_gap + val) / nDivs
 
 
-def getDataVectors(sequence_file, path_file, doShuffle = True):
+def computeSequenceNumber(filename):
+    """
+    Returns a sequence number, or -1 on error
+    """
+
+    # My names are in the form "<dirs>/radar_YYYY_MM_DD_HH_MM.gif
+    # I will search for the numeric sub-sequence, and ignore the rest
+    match = re.search(r'.*([0-9]{4})_([0-9]{2})_([0-9]{2})'
+                      '_([0-9]{2})_([0-9]{2}).*', filename)
+    if not match:
+        return -1
+
+    year = int(match.group(1))
+    month = int(match.group(2))
+    day = int(match.group(3))
+    hour = int(match.group(4))
+    minute = int(match.group(5))
+
+    mytime = datetime.datetime(year = year, month = month, day = day,
+                               hour = hour, minute = minute)
+
+    epoch = datetime.datetime(year=2015, month = 1, day = 1,
+                              hour = 0, minute = 0)
+
+    delta = mytime - epoch
+    return int(delta.total_seconds() / 600), year, month, day, hour, minute
+
+    
+
+def getDataVectors(sequence_file, path_file):
     pathmap = {}
     seqmap = {}
     seqlist = []
@@ -492,6 +523,11 @@ def getDataVectors(sequence_file, path_file, doShuffle = True):
 
     rvalX = np.empty([len(seqlist), 6, datasize])
     rvalY = np.empty([len(seqlist), 10])
+    rvalM = np.empty([len(seqlist), 1])   # month field
+
+    monthdata = [ None,
+                  0.16, 0, 0.16, 0.33, 0.5, 0.67,
+                  0.83, 1, 0.83, 0.67, 0.5, 0.33 ]
 
     for index in range(len(seqlist)):
         base_seqno = seqlist[index]
@@ -504,24 +540,16 @@ def getDataVectors(sequence_file, path_file, doShuffle = True):
             rvalX[index][timestep] = np.asarray(rpbo.getPreparedData()) / 255
 
         rvalY[index] = np.asarray(seqmap[base_seqno])
+        junk1, junk2, month, junk3, junk4, junk5 = computeSequenceNumber(pathmap[base_seqno])
+        
+        rvalM[index] = monthdata[month]
 
     hasher = hashlib.sha256()
     hasher.update(rvalX.data.tobytes())
     hasher.update(rvalY.data.tobytes())
     hashval = (hasher.hexdigest())[-16:]
 
-    # Shuffle the vectors
-    if doShuffle:
-        for i in range(len(seqlist)):
-            newoffset = random.randint(i, len(seqlist) - 1)
-            if newoffset == i:
-                continue
-
-            rvalX[[i, newoffset]] = rvalX[[newoffset, i]]
-            rvalY[[i, newoffset]] = rvalY[[newoffset, i]]
-
-
-    return rvalX, rvalY, datasize, len(seqlist), hashval
+    return rvalX, rvalY, rvalM, datasize, len(seqlist), hashval
 
 
 
