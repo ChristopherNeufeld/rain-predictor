@@ -49,16 +49,12 @@ import sys
 import os
 import rpreddtypes
 import numpy as np
-import re
-import datetime
 import math
 
 
 phantomRainRadius = 20
 phantomRainFrac = 0.6
 phantomHighPixelMax = 10
-epoch = datetime.datetime(year=2015, month = 1, day = 1,
-                          hour = 0, minute = 0)
 
 
 def rotate_pixel_CCW (pixel, centre, nDiv, rotNum):
@@ -115,29 +111,6 @@ def rotate_pixel_CCW (pixel, centre, nDiv, rotNum):
     rval[0] = centre[0] + deltavec[0]
     rval[1] = centre[1] + deltavec[1]
     return rval
-
-
-def computeSequenceNumber(filename):
-    """
-    Returns a sequence number, or -1 on error
-    """
-    # My names are in the form "<dirs>/radar_YYYY_MM_DD_HH_MM.gif
-    # I will search for the numeric sub-sequence, and ignore the rest
-    match = re.search(r'.*([0-9]{4})_([0-9]{2})_([0-9]{2})'
-                      '_([0-9]{2})_([0-9]{2}).*', filename)
-    if not match:
-        return -1
-
-    year = int(match.group(1))
-    month = int(match.group(2))
-    day = int(match.group(3))
-    hour = int(match.group(4))
-    minute = int(match.group(5))
-
-    mytime = datetime.datetime(year = year, month = month, day = day,
-                               hour = hour, minute = minute)
-    delta = mytime - epoch
-    return int(delta.total_seconds() / 600)
 
 
 def rainPresent(binReader, centre, sensitivePixels, heavyVal, seqno):
@@ -247,7 +220,7 @@ hashString = rpreddtypes.genhash(args.centre, args.sensitive, args.heavy)
 for inputfile in args.ifilenames:
     rpReader = rpreddtypes.RpBinReader()
     rpReader.read(inputfile)
-    seqno = computeSequenceNumber(inputfile)
+    seqno, junk1, junk2, junk3, junk4, junk5 = rpreddtypes.computeSequenceNumber(inputfile)
 
     record = '{0} {1} {2} {3}'.format(seqno,
                                       os.path.abspath(inputfile),
