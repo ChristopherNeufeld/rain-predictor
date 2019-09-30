@@ -342,3 +342,33 @@ output layer.
 Version 2bfef4bcd6f55416e5287bbaeda4a3aff1aa7ede
 
 Custom Error Measure= 7753.499999999999
+
+
+
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+
+Starting over with cleanly disjoint data, and much more data.
+
+500/300/10 network is badly overtrained from epoch 2
+
+100/300/10 network is as above
+
+80/40/10  as above
+
+Went down as far as 10/10/10, still overfitting
+
+Added a dense layer below the LSTM layer, new geometry:
+40/10/10/10
+
+Added normalization and dropout layers:
+40/N/D/10/D/10/N/10
+still overfitting
+
+
+
+
