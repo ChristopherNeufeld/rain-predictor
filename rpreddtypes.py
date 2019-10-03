@@ -278,12 +278,14 @@ class RpBinReader(RpBinCommon):
         self.totalrain = -1
         self.numPayloads = -1
         self.payloads = []
+        self.pathname = None
 
     def read(self, filename):
         self.readHeader(filename, True)
         
 
     def readHeader(self, filename, withData = False):
+        self.pathname = filename
         with open(filename, 'rb') as istream:
             try:
                 istream = open(filename, 'rb')
@@ -332,6 +334,9 @@ class RpBinReader(RpBinCommon):
                 self.payloads.append(newobj)
             
 
+    def getPathname(self):
+        return self.pathname
+                
     def getVersion(self):
         return self.version
 
@@ -398,6 +403,7 @@ class RpBinWriter(RpBinCommon):
 
         
     def write(self, filename, maxval, totalRain):
+        self.pathname = filename
         with open(filename, 'wb') as ofile:
             ofile.write('{0}\n'.format(self.HEADER_KEY)
                         .encode('ascii'))
