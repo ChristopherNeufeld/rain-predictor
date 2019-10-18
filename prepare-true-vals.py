@@ -50,11 +50,10 @@ import os
 import rpreddtypes
 import numpy as np
 import math
+import keras
 
 
-phantomRainRadius = 20
-phantomRainFrac = 0.6
-phantomHighPixelMax = 10
+phantomRainNetwork = None
 
 
 def rotate_pixel_CCW (pixel, centre, nDiv, rotNum):
@@ -113,7 +112,7 @@ def rotate_pixel_CCW (pixel, centre, nDiv, rotNum):
     return rval
 
 
-def rainPresent(binReader, centre, sensitivePixels, heavyVal, seqno):
+def rainPresent(binReader, sensitivePixels, bounds, heavyVal, seqno):
     """
     Returns a list of 2 integer elements.  The first indicates any
     rain at all in any of the sensitive pixels.  The second indicates
@@ -121,6 +120,7 @@ def rainPresent(binReader, centre, sensitivePixels, heavyVal, seqno):
     """
 
     rpbo = binReader.getScaledObject(1)
+    mrv = binReader.getMaxRainval()
     maxSeen = 0
     anyRain = 0
     heavyRain = 0
@@ -131,6 +131,7 @@ def rainPresent(binReader, centre, sensitivePixels, heavyVal, seqno):
     dataWidth = rpbo.getWidth()
     dataHeight = rpbo.getHeight()
     data = rpbo.getNumpyArrayMax()
+    
     for pixel in sensitivePixels:
         pval = data[pixel[0] - yoffset][pixel[1] - xoffset]
         if pval > 0:
@@ -149,43 +150,25 @@ def rainPresent(binReader, centre, sensitivePixels, heavyVal, seqno):
     if not checkPhantom:
         return [ anyRain, heavyRain ]
 
-    # Have to check for phantom rain.  If all pixels within
-    # 'phantomRainRadius' of the centre are 0 or 1, and the fraction
-    # of elements that are 1 is less than 'phantomRainFrac', then we
-    # declare the rain to be an instrumental artefact
+    # Have to check for phantom rain.
 
-    nPixels = 0
-    nSetPixels = 0
-    highPixels = 0
-    for probeRow in range(-phantomRainRadius, phantomRainRadius):
-        deltaCol = int(math.sqrt(phantomRainRadius ** 2 - probeRow ** 2))
-        for probeCol in range(-deltaCol, deltaCol):
-            probePt = [ centre[0] + probeRow - offset[0],
-                        centre[1] + probeCol - offset[1]]
-            if ( probePt[0] < 0 or probePt[0] >= dataWidth
-                 or probePt[1] < 0 or probePt[1] >= dataHeight ):
-                continue
+    minRow = bounds[2]
+    minCol = bounds[0]
+    numRows = bounds[3] - bounds[2] + 1
+    numCols = bounds[1] - bounds[0] + 1
 
-            nPixels += 1
-            pixelVal = data[probePt[0]][probePt[1]]
+    clipped = np.zeros((1, 1, numRows, numCols))
+    for row in range(numRows):
+        for col in range(numCols):
+            clipped[0, 0, row, col] = (data[minRow + row, minCol + col] / mrv - 0.5) * 2
 
-            # If we've got several pixels larger than 1, no phantom
-            # rain
-            if pixelVal > 1:
-                highPixels += 1
-
-            if highPixels > phantomHighPixelMax:
-                return [anyRain, heavyRain]
-
-            if pixelVal == 1:
-                nSetPixels += 1
-
-    if nSetPixels >= nPixels * phantomRainFrac:
-        return [ anyRain, heavyRain ]
-    else:
+    isPhantom = phantomRainNetwork.predict(x = clipped)
+    if isPhantom[0] >= 0.5:
         return [ 0, 0 ]
-
+    else:
+        return [ anyRain, heavyRain ]
     
+
 
 
 ## Main execution begins here
@@ -207,12 +190,23 @@ parser.add_argument('--override-sensitive-region', type=list,
 parser.add_argument('--rotations', type=int, dest='rotations',
                     default=0, help='Number of synthetic data points '
                     'to create (via rotation) for each input data point')
+parser.add_argument('--phantom-network', type=str, dest='phantomnet',
+                    required=True,
+                    help='Name of the saved neural network that will '
+                    'determine whether rain is true or \'phantom\'.')
+parser.add_argument('--bounds', type=list, dest='bounds',
+                    default=[240, 295, 185, 240],
+                    help='Bounds of the region to pass to the network.'
+                    '  They are [minCol, maxCol, minRow, maxRow].')
 parser.add_argument('--heavy-rain-index', type=int, dest='heavy',
                     default=3, help='Lowest index in the colour table '
                     'that indicates heavy rain, where 1 is the '
                     'lightest rain.')
 
 args = parser.parse_args()
+
+
+phantomRainNetwork = keras.models.load_model(args.phantomnet)
 
 
 hashString = rpreddtypes.genhash(args.centre, args.sensitive, args.heavy)
@@ -229,7 +223,7 @@ for inputfile in args.ifilenames:
                                                           args.heavy),
                                       args.rotations)
 
-    truevals = rainPresent(rpReader, args.centre, args.sensitive, args.heavy,
+    truevals = rainPresent(rpReader, args.sensitive, args.bounds, args.heavy,
                            seqno)
     record = '{0} {1} {2}'.format(record, truevals[0], truevals[1])
 
@@ -238,7 +232,7 @@ for inputfile in args.ifilenames:
         for i in range(len(sense2)):
             sense2[i] = rotate_pixel_CCW(sense2[i], args.centre,
                                          args.rotations + 1, rot + 1)
-        truevals = rainPresent(rpReader, args.centre, sense2, args.heavy)
+        truevals = rainPresent(rpReader, sense2, args.bounds, args.heavy)
         record = '{0} {1} {2}'.format(record, truevals[0], truevals[1])
 
     print (record)
