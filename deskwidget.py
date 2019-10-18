@@ -168,6 +168,11 @@ class BaseWidget():
 
 
     def loadNewBinFiles(self):
+
+        monthdata = [ None,
+                      0.16, 0, 0.16, 0.33, 0.5, 0.67,
+                      0.83, 1, 0.83, 0.67, 0.5, 0.33 ]
+        
         now = datetime.datetime.utcnow()
         nowYear = now.year
         nowMonth = now.month
@@ -222,14 +227,17 @@ class BaseWidget():
         datasize = rpbo.getDataLength()
 
         xvals = np.empty([1, 6, datasize])
+        mvals = np.empty([1, 1])
 
         for timestep in range(6):
             reader = rpreddtypes.RpBinReader()
             reader.read(self.binFileNames[timestep])
             rpbo = reader.getPreparedDataObject()
             xvals[0][timestep] = np.asarray(rpbo.getPreparedData()) / 255
-            
-        self.vals = self.network.predict(xvals)[0]
+
+        
+        mvals[0][0] = monthdata[nowMonth]
+        self.vals = self.network.predict([xvals, mvals])[0]
         self.lastUpdate.set(thisstring)
         self.validDate = now
         self.updateLabel.configure(bg = "White")
