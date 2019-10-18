@@ -34,10 +34,9 @@ import numpy as np
 ### Main code entry point here
 
 
-geometry_layer_nodes = 40
-lstm_module_nodes = 10
-synth_layer_nodes = 10
-hidden_layer_nodes = 100
+geometry_layer_nodes = 80
+lstm_module_nodes = 30
+synth_layer_nodes = 30
 num_outputs = 10
 
 
@@ -185,26 +184,21 @@ else:
 
 
     geometry_layer = Dense(geometry_layer_nodes, activation='relu')(inputs1)
-    norm_layer1 = BatchNormalization()(geometry_layer)
-    drop_layer1 = Dropout(rate=0.4)(norm_layer1)
+    drop_layer1 = Dropout(rate=0.5)(geometry_layer)
 
     time_layer = LSTM(lstm_module_nodes, stateful = False,
                       activation='relu')(drop_layer1)
 
-    drop_layer2 = Dropout(rate=0.4)(time_layer)
+    drop_layer2 = Dropout(rate=0.5)(time_layer)
 
-#     concat = Concatenate()([time_layer, inputsM])
+    concat = Concatenate()([drop_layer2, inputsM])
 
-#     synth_layer = Dense(synth_layer_nodes, activation='relu')(concat)
-    synth_layer = Dense(synth_layer_nodes, activation='relu')(drop_layer2)
+    synth_layer = Dense(synth_layer_nodes, activation='relu')(concat)
 
 
-    norm_layer2 = BatchNormalization()(synth_layer)
+    output_layer = Dense(num_outputs, activation='sigmoid')(synth_layer)
 
-    output_layer = Dense(num_outputs, activation='sigmoid')(norm_layer2)
-
-    # mymodel = Model(inputs=[inputs1, inputsM], outputs=[output_layer])
-    mymodel = Model(inputs=inputs1, outputs=[output_layer])
+    mymodel = Model(inputs=[inputs1, inputsM], outputs=[output_layer])
 
     mymodel.compile(loss='binary_crossentropy',
                     optimizer=useoptimizer)
@@ -225,12 +219,8 @@ if args.nEpochs > 0:
     if args.tensorboard:
         calllist.append(cb2)
 
-    # history = mymodel.fit(x = [xvals, mvals], y = yvals, epochs = args.nEpochs,
-    #                       validation_data = [[vxvals, vmvals], vyvals],
-    #                       verbose=1, batch_size = 512,
-    #                       shuffle = True, callbacks = calllist)
-    history = mymodel.fit(x = xvals, y = yvals, epochs = args.nEpochs,
-                          validation_data = [vxvals, vyvals],
+    history = mymodel.fit(x = [xvals, mvals], y = yvals, epochs = args.nEpochs,
+                          validation_data = [[vxvals, vmvals], vyvals],
                           verbose=1, batch_size = 512,
                           shuffle = True, callbacks = calllist)
 
@@ -243,6 +233,13 @@ if args.nEpochs > 0:
         with open(filename, 'w') as ofile:
             ofile.write('\n'.join(str(val) for val in history.history[key]))
     
+
+
+# mymodel = keras.models.load_model('cb' + args.savefile)
+# vypred = mymodel.predict(x = [ vxvals, vmvals ])
+# for i in range(len(vxvals)):
+#     print('{0} TRUE {1}'.format(i, vyvals[i]))
+#     print('{0} PRED {1}'.format(i, vypred[i]))
 
     
 # My confusion matrix is  TP:  0,0
