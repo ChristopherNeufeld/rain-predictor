@@ -141,6 +141,7 @@ class BaseWidget():
         if self.needRefresh == 0:
             return
         self.needRefresh = 0
+        self.canvas.delete('my_dots')
         for time in range(5):
             for intensity in range(2):
                 centreX = (0.35 + 0.45 * intensity) * self.width
@@ -162,6 +163,7 @@ class BaseWidget():
                                         centreY + self.csize / 2,
                                         outline = self.hcolour,
                                         fill=colour,
+                                        tags='my_dots',
                                         width = 2)
         
         self.canvas.pack(fill=tkinter.BOTH, expand=1)
