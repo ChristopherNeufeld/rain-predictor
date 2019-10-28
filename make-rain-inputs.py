@@ -342,7 +342,7 @@ for ifile in args.ifilenames:
             i1 = r1 * newwidth + c1
             
             modnum = modules[col][row]
-            sums[modnum] += appendval
+            sums[modnum] += output_block[i1]
             counts[modnum] += 1
             densecounts[modnum] += densepixels[i1]
             if output_block[i1] > maxvals[modnum]:
