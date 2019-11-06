@@ -341,10 +341,10 @@ class RpBinReader(RpBinCommon):
         return self.version
 
     def getWidth(self):
-        return self.width
+        return self.getScaledObject(1).getWidth()
 
     def getHeight(self):
-        return self.height
+        return self.getScaledObject(1).getHeight()
 
     def getXOffset(self):
         return self.xoffset

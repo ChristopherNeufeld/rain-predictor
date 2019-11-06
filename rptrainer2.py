@@ -35,9 +35,16 @@ import numpy as np
 
 
 geometry_layer_nodes = 80
-lstm_module_nodes = 30
-synth_layer_nodes = 30
+lstm_module_nodes = 45
+synth_layer_nodes = 10
 num_outputs = 10
+
+
+# Rescale the weights.  Rain in next hour has unity weight.  Later
+# intervals are weighted down, as less important.  Heavy/light
+# distinction is half as important as rain at all.
+classweights = { 0:1.0, 1:0.5, 2:0.9, 3:0.45, 4:0.8,
+                 5:0.4, 6:0.7, 7:0.35, 8:0.6, 9:0.3 }
 
 
 parser = argparse.ArgumentParser(description='Train the rain '
@@ -151,7 +158,7 @@ if args.nEpochs > 0:
                      vxvals = vxvals, vyvals = vyvals, vmvals = vmvals)
 
 
-useoptimizer = keras.optimizers.RMSprop()
+useoptimizer = keras.optimizers.Adadelta()
 if args.optimizer == 0:
     useoptimizer = keras.optimizers.SGD()
 elif args.optimizer == 1:
@@ -183,24 +190,27 @@ else:
     inputsM = Input(batch_shape = (None, 1))
 
 
+
+
     geometry_layer = Dense(geometry_layer_nodes, activation='relu')(inputs1)
-    drop_layer1 = Dropout(rate=0.5)(geometry_layer)
+    drop_layer1 = Dropout(rate=0.25)(geometry_layer)
 
-    time_layer = LSTM(lstm_module_nodes, stateful = False,
-                      activation='relu')(drop_layer1)
+    time_layer2 = LSTM(lstm_module_nodes, stateful = False,
+                       return_sequences = False,
+                       activation='relu')(drop_layer1)
 
-    drop_layer2 = Dropout(rate=0.5)(time_layer)
+    drop_layer2 = Dropout(rate=0.25)(time_layer2)
 
     concat = Concatenate()([drop_layer2, inputsM])
 
-    synth_layer = Dense(synth_layer_nodes, activation='relu')(concat)
-
-
-    output_layer = Dense(num_outputs, activation='sigmoid')(synth_layer)
+    synth_layer1 = Dense(synth_layer_nodes, activation='relu')(concat)
+            
+    output_layer = Dense(num_outputs, activation='sigmoid')(synth_layer1)
 
     mymodel = Model(inputs=[inputs1, inputsM], outputs=[output_layer])
 
     mymodel.compile(loss='binary_crossentropy',
+                    metrics = [keras.metrics.binary_accuracy],
                     optimizer=useoptimizer)
 
 
@@ -208,6 +218,7 @@ if args.nEpochs > 0:
 
     cb1 = keras.callbacks.ModelCheckpoint('cb' + args.savefile,
                                           save_weights_only=False,
+                                          monitor='val_binary_accuracy',
                                           save_best_only = True,
                                           verbose=1,
                                           mode='auto', period=1)
@@ -220,6 +231,7 @@ if args.nEpochs > 0:
         calllist.append(cb2)
 
     history = mymodel.fit(x = [xvals, mvals], y = yvals, epochs = args.nEpochs,
+                          class_weight = classweights,
                           validation_data = [[vxvals, vmvals], vyvals],
                           verbose=1, batch_size = 512,
                           shuffle = True, callbacks = calllist)

@@ -372,3 +372,149 @@ still overfitting
 
 
 
+
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+
+
+New pre-processing.  Rain pixel fraction, mean rain, RMS rain
+
+Monitoring binary accuracy.  Reporing mean and stddev over 4 trials.
+
+
+geometry_layer_nodes = 30
+lstm_module_nodes = 10
+synth_layer_nodes = 10
+num_outputs = 10
+
+            inputs1 = Input
+            inputsM = Input
+
+            geometry_layer = Dense(activation='relu')
+            drop_layer1 = Dropout(rate=0.25)
+            time_layer1 = LSTM(lstm_module_nodes, stateful = False,
+                               return_sequences = True,
+                               activation='relu')
+            time_layer2 = LSTM(lstm_module_nodes, stateful = False,
+                               return_sequences = False,
+                               activation='relu')
+            drop_layer2 = Dropout(rate=0.25)
+            concat = Concatenate()([drop_layer2, inputsM])
+            synth_layer1 = Dense(synth_layer_nodes, activation='relu')
+            synth_layer2 = Dense(synth_layer_nodes, activation='relu')
+            output_layer = Dense(num_outputs, activation='sigmoid')
+
+
+for optimizer in [ keras.optimizers.Adagrad(), keras.optimizers.Adadelta(),
+                   keras.optimizers.Adam(), keras.optimizers.Adamax(),
+                   keras.optimizers.Nadam(),
+                   keras.optimizers.RMSprop()]:
+    for batch_size in [ 128, 256, 512, 1024 ]:
+
+
+
+<keras.optimizers.Adagrad object at 0x7ff5de84ac10> 128 : 0.8860821092987271 0.0002839883863820208
+<keras.optimizers.Adagrad object at 0x7ff5de84ac10> 256 : 0.8870710977191589 0.000880163670708477
+<keras.optimizers.Adagrad object at 0x7ff5de84ac10> 512 : 0.8862319422406267 0.0015270220285323577
+<keras.optimizers.Adagrad object at 0x7ff5de84ac10> 1024 : 0.8859614225754376 0.0005515986780684213
+<keras.optimizers.Adadelta object at 0x7ff5de84a050> 128 : 0.8855070632190758 0.0013077720933831302
+<keras.optimizers.Adadelta object at 0x7ff5de84a050> 256 : 0.8861432941717791 0.0004077690584907566
+<keras.optimizers.Adadelta object at 0x7ff5de84a050> 512 : 0.8864099314760169 0.0010167975609776173
+<keras.optimizers.Adadelta object at 0x7ff5de84a050> 1024 : 0.8861112162014292 0.0014898036863940911
+<keras.optimizers.Adam object at 0x7ff5de84a250> 128 : 0.8856472002637512 0.002290273373295813
+<keras.optimizers.Adam object at 0x7ff5de84a250> 256 : 0.8858670476347718 0.00011999298074812856
+<keras.optimizers.Adam object at 0x7ff5de84a250> 512 : 0.8857036066093318 0.0014050616372488917
+<keras.optimizers.Adam object at 0x7ff5de84a250> 1024 : 0.8854226170319004 0.001524995209186944
+<keras.optimizers.Adamax object at 0x7ff5de896b90> 128 : 0.8888316970330677 0.0007182968596919951
+<keras.optimizers.Adamax object at 0x7ff5de896b90> 256 : 0.8871669401978599 0.0014917134730436808
+<keras.optimizers.Adamax object at 0x7ff5de896b90> 512 : 0.887957082612913 0.0018812014213776317
+<keras.optimizers.Adamax object at 0x7ff5de896b90> 1024 : 0.8862771327047748 0.0010431172730844718
+<keras.optimizers.Nadam object at 0x7ff5de8a5dd0> 128 : 0.8851148376316874 0.0009227898326317715
+<keras.optimizers.Nadam object at 0x7ff5de8a5dd0> 256 : 0.8860474532964376 0.001510945503096132
+<keras.optimizers.Nadam object at 0x7ff5de8a5dd0> 512 : 0.8847371396866046 0.0010451914886944493
+<keras.optimizers.Nadam object at 0x7ff5de8a5dd0> 1024 : 0.8852317348376542 0.0013487252753214816
+<keras.optimizers.RMSprop object at 0x7ff434edcb50> 128 : 0.8877581151564218 0.00043066100024175187
+<keras.optimizers.RMSprop object at 0x7ff434edcb50> 256 : 0.8888075068582943 0.0021124450959025035
+<keras.optimizers.RMSprop object at 0x7ff434edcb50> 512 : 0.887671976613824 0.000977297292981032
+<keras.optimizers.RMSprop object at 0x7ff434edcb50> 1024 : 0.8874876370023987 0.0006220745223378001
+
+
+
+
+
+            inputs1 = Input
+            inputsM = Input
+
+            geometry_layer = Dense(activation='relu')
+            drop_layer1 = Dropout(rate=0.25)
+            time_layer2 = LSTM(lstm_module_nodes, stateful = False,
+                               return_sequences = False,
+                               activation='relu')
+            drop_layer2 = Dropout(rate=0.25)
+            concat = Concatenate()([drop_layer2, inputsM])
+            synth_layer1 = Dense(synth_layer_nodes, activation='relu')
+            output_layer = Dense(num_outputs, activation='sigmoid')
+
+<keras.optimizers.Adagrad object at 0x7f09411d7bd0> 128 : 0.8887986753849151 0.0016355941243708315
+<keras.optimizers.Adagrad object at 0x7f09411d7bd0> 256 : 0.8895782607686662 0.0014168213002399618
+<keras.optimizers.Adagrad object at 0x7f09411d7bd0> 512 : 0.8881294325463094 0.000392375834205088
+<keras.optimizers.Adagrad object at 0x7f09411d7bd0> 1024 : 0.8878758335324939 0.0015859869793762753
+<keras.optimizers.Adadelta object at 0x7f094121ed90> 128 : 0.8884032317170055 0.0017460609230529943
+<keras.optimizers.Adadelta object at 0x7f094121ed90> 256 : 0.8896966548747867 0.001117503338894346
+<keras.optimizers.Adadelta object at 0x7f094121ed90> 512 : 0.8892360383110107 0.0007600977373459602
+<keras.optimizers.Adadelta object at 0x7f094121ed90> 1024 : 0.8872065517466567 0.001548859073782688
+<keras.optimizers.Adam object at 0x7f094122cb50> 128 : 0.8884499427836632 0.0013094173433076204
+<keras.optimizers.Adam object at 0x7f094122cb50> 256 : 0.8891344934467657 0.0011633492762776578
+<keras.optimizers.Adam object at 0x7f094122cb50> 512 : 0.8887511914524735 0.000529774877024729
+<keras.optimizers.Adam object at 0x7f094122cb50> 1024 : 0.8886715607876469 0.0006859508054446664
+<keras.optimizers.Adamax object at 0x7f094122cb90> 128 : 0.8889839143758198 0.0010510017174118814
+<keras.optimizers.Adamax object at 0x7f094122cb90> 256 : 0.8897320901294148 0.000730944681541122
+<keras.optimizers.Adamax object at 0x7f094122cb90> 512 : 0.8886239420616466 0.0018762111149504472
+<keras.optimizers.Adamax object at 0x7f094122cb90> 1024 : 0.8882897968931238 0.0016773529443049877
+<keras.optimizers.Nadam object at 0x7f094122cd90> 128 : 0.8876026783419702 0.002451361904670787
+<keras.optimizers.Nadam object at 0x7f094122cd90> 256 : 0.8874222411910944 0.0014872141456719098
+<keras.optimizers.Nadam object at 0x7f094122cd90> 512 : 0.8865798689891358 0.0008913166961054979
+<keras.optimizers.Nadam object at 0x7f094122cd90> 1024 : 0.8871920609542541 0.0019172427110081434
+<keras.optimizers.RMSprop object at 0x7f094122c890> 128 : 0.8903313252816498 0.0006076774540648202
+<keras.optimizers.RMSprop object at 0x7f094122c890> 256 : 0.8888985163735528 0.0008941862608967118
+<keras.optimizers.RMSprop object at 0x7f094122c890> 512 : 0.8899584715043234 0.0008864485310891043
+<keras.optimizers.RMSprop object at 0x7f094122c890> 1024 : 0.8897926505775182 0.0009601440370948196
+
+
+for geometry_layer_nodes in [ 10, 20, 30, 40, 50]:
+    for lstm_module_nodes in [ 5, 10, 15, 20, 25, 30]:
+
+GLN: 10 LMN: 5 : 0.8848893605317848 0.0017218064456928678
+GLN: 10 LMN: 10 : 0.8888132078915442 0.0005107894806635509
+GLN: 10 LMN: 15 : 0.8894889309782945 0.0020092929028619477
+GLN: 10 LMN: 20 : 0.8892771081468431 0.0010926394538358266
+GLN: 10 LMN: 25 : 0.8891981818315497 0.0028537758886603664
+GLN: 10 LMN: 30 : 0.8907719090374999 0.000643236615206668
+GLN: 20 LMN: 5 : 0.8845358014184518 0.0009750292391046624
+GLN: 20 LMN: 10 : 0.8897474598359028 0.0008479512034508914
+GLN: 20 LMN: 15 : 0.8899939060307192 0.000984421810384982
+GLN: 20 LMN: 20 : 0.8903249204129979 0.0006647541113927823
+GLN: 20 LMN: 25 : 0.8913646751862281 0.00030488205901276643
+GLN: 20 LMN: 30 : 0.8913058763605921 0.00033356302752898304
+GLN: 30 LMN: 5 : 0.8875970738395957 0.001183596031927565
+GLN: 30 LMN: 10 : 0.8899979316830339 0.0005052213607407071
+GLN: 30 LMN: 15 : 0.8902596824332221 0.0009467325141602227
+GLN: 30 LMN: 20 : 0.8910803727668561 0.000498070912790744
+GLN: 30 LMN: 25 : 0.8910932573104756 0.0002745996197593428
+GLN: 30 LMN: 30 : 0.8917021300739812 0.0008479908808774641
+GLN: 40 LMN: 5 : 0.8872926359857765 0.0012967874961285334
+GLN: 40 LMN: 10 : 0.8906333820047017 0.0002410431327007596
+GLN: 40 LMN: 15 : 0.8909998330606297 0.00043815497494782306
+GLN: 40 LMN: 20 : 0.8911584930844323 0.0005077537242554728
+GLN: 40 LMN: 25 : 0.8914854833755115 0.0008068258549420187
+GLN: 40 LMN: 30 : 0.8913630614458203 0.0006584953524703881
+GLN: 50 LMN: 5 : 0.8883315862979222 0.0013011720173112978
+GLN: 50 LMN: 10 : 0.8891740231887109 0.001340334633380931
+GLN: 50 LMN: 15 : 0.8907743229051214 0.0007846710269487009
+GLN: 50 LMN: 20 : 0.8921708651941918 0.00030727547199595916
+GLN: 50 LMN: 25 : 0.8918640116447294 0.000531999986239723
+GLN: 50 LMN: 30 : 0.8922071050323164 0.0006965406381843089
