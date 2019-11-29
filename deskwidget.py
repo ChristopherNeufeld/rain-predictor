@@ -85,6 +85,9 @@ class BaseWidget():
 
     def makeGifWindow(self):
         self.mutex.acquire()
+        if self.gwin:
+            self.mutex.release()
+            return
         self.gwin = tkinter.Toplevel()
         self.gwin.wm_title("Radar Images")
         for i in range(6):
